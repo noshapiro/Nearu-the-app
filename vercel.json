@@ -1,6 +1,6 @@
 {
   "version": 2,
   "buildCommand": "echo 'API only'",
-  "installCommand": "pnpm install",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": null
 }
