@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "echo 'API only'",
+  "buildCommand": "mkdir -p public && echo 'API' > public/index.html",
   "installCommand": "pnpm install --no-frozen-lockfile",
+  "outputDirectory": "public",
   "framework": null
 }
