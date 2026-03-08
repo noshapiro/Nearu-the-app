@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Nearu",
+    "slug": "nearu",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "nearu",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.nearu.ios",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Nearu uses your camera during video calls with Aurora.",
+        "NSMicrophoneUsageDescription": "Nearu uses your microphone during video calls.",
+        "NSPhotoLibraryUsageDescription": "Nearu saves snapshots from your sessions.",
+        "NSSpeechRecognitionUsageDescription": "Nearu transcribes speech during video calls.",
+        "UIBackgroundModes": ["audio"]
+      },
+      "deploymentTarget": "16.0"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#050508"
+      },
+      "package": "app.nearu.android"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/InstrumentSerif-Regular.ttf",
+            "./assets/fonts/InstrumentSerif-Italic.ttf"
+          ]
+        }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Nearu uses your camera during video calls with Aurora.",
+          "microphonePermissionText": "Nearu uses your microphone during video calls."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'API only'",
+  "installCommand": "pnpm install",
+  "framework": null
+}

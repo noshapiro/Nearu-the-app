@@ -1,0 +1,2038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nearu — Video Call with Aurora</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --nr-void:       #050508;
+  --nr-deep:       #0C0C14;
+  --nr-surface:    #13131E;
+  --nr-elevated:   #1A1A2C;
+  --nr-float:      #22223A;
+  --nr-border:     rgba(255,255,255,0.07);
+  --nr-border-lg:  rgba(255,255,255,0.13);
+  --nr-aurora:     #7B6EFF;
+  --nr-aurora-2:   #A594FF;
+  --nr-aurora-dim: rgba(123,110,255,0.15);
+  --nr-mint:       #2DCEA8;
+  --nr-coral:      #FF6B6B;
+  --nr-amber:      #FFB347;
+  --t-primary:   #F0F0F8;
+  --t-secondary: #8888AA;
+  --t-tertiary:  #4A4A6A;
+  --f-display: 'Instrument Serif', Georgia, serif;
+  --f-ui:      'Syne', system-ui, sans-serif;
+  --f-mono:    'Geist Mono', monospace;
+  --phone-w: 393px;
+  --phone-h: 852px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+
+body {
+  background: var(--nr-void);
+  color: var(--t-primary);
+  font-family: var(--f-ui);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =====================
+   PAGE HEADER
+===================== */
+.page-header {
+  width: 100%;
+  max-width: 1400px;
+  padding: 56px 48px 40px;
+  position: relative;
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 900px; height: 500px;
+  background: radial-gradient(ellipse, rgba(123,110,255,0.09) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--nr-aurora);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 18px;
+}
+.eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--nr-aurora); }
+
+.page-title {
+  font-family: var(--f-display);
+  font-size: clamp(40px, 4.5vw, 68px);
+  font-weight: 400;
+  letter-spacing: -2px;
+  line-height: 1.06;
+  margin-bottom: 16px;
+}
+.page-title em {
+  font-style: italic;
+  background: linear-gradient(120deg, var(--nr-aurora) 0%, var(--nr-aurora-2) 50%, var(--nr-mint) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.page-subtitle {
+  font-size: 17px; color: var(--t-secondary); max-width: 560px; line-height: 1.7;
+}
+
+/* =====================
+   MAIN LAYOUT
+===================== */
+.main-layout {
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 48px 80px;
+  display: grid;
+  grid-template-columns: var(--phone-w) 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+/* =====================
+   PHONE FRAME
+===================== */
+.phone-wrap {
+  position: sticky;
+  top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.phone-frame {
+  width: var(--phone-w);
+  height: var(--phone-h);
+  background: #060610;
+  border-radius: 56px;
+  border: 1.5px solid rgba(255,255,255,0.14);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 6px #08080F,
+    0 0 0 7.5px rgba(255,255,255,0.07),
+    0 60px 120px rgba(0,0,0,0.85),
+    0 0 80px rgba(123,110,255,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* Dynamic Island */
+.dynamic-island {
+  position: absolute;
+  top: 14px; left: 50%;
+  transform: translateX(-50%);
+  width: 126px; height: 37px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dynamic-island.expanded {
+  width: 300px; height: 56px;
+  border-radius: 28px;
+}
+
+.di-camera {
+  width: 12px; height: 12px;
+  background: #1a1a2c;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+.di-camera::after {
+  content: '';
+  position: absolute; inset: 3px;
+  background: #2d2d50;
+  border-radius: 50%;
+}
+
+.di-call-info {
+  display: none;
+  align-items: center; gap: 8px;
+  flex: 1; padding-left: 4px;
+}
+.dynamic-island.expanded .di-call-info { display: flex; }
+
+.di-call-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--nr-aurora), var(--nr-mint));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+
+.di-call-text {
+  flex: 1;
+}
+.di-call-name { font-size: 12px; font-weight: 600; color: white; line-height: 1.2; }
+.di-call-dur  { font-size: 10px; color: var(--nr-mint); font-family: var(--f-mono); letter-spacing: 0.3px; }
+
+.di-call-end {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--nr-coral);
+  display: none;
+  align-items: center; justify-content: center;
+  font-size: 12px;
+  margin-right: 4px;
+  cursor: pointer;
+}
+.dynamic-island.expanded .di-call-end { display: flex; }
+
+/* Status bar */
+.status-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 28px 8px;
+  z-index: 150;
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  font-family: var(--f-ui);
+}
+.sb-time { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+.sb-icons { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+
+/* =====================
+   VIDEO CALL SCREEN
+===================== */
+.vc-screen {
+  position: absolute; inset: 0;
+  background: var(--nr-void);
+  overflow: hidden;
+}
+
+/* === AURORA AVATAR — full background === */
+.avatar-bg {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+/* Animated aurora gradient environment */
+.avatar-env {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 340px 460px at 50% 45%, rgba(60,45,140,0.95) 0%, rgba(20,15,60,0.85) 50%, rgba(5,5,10,1) 100%);
+  animation: envPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes envPulse {
+  0%   { filter: brightness(0.85) hue-rotate(0deg); }
+  100% { filter: brightness(1.05) hue-rotate(8deg); }
+}
+
+/* Particle field behind avatar */
+.particle-field {
+  position: absolute; inset: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(165,148,255,0.5);
+  animation: particleDrift linear infinite;
+}
+
+@keyframes particleDrift {
+  0%   { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.5; }
+  100% { transform: translateY(-200px) translateX(var(--drift, 20px)) scale(0.5); opacity: 0; }
+}
+
+/* The AI avatar figure */
+.ai-figure {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -54%);
+  display: flex; flex-direction: column; align-items: center;
+  z-index: 10;
+}
+
+/* Glowing orb head */
+.ai-head {
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  position: relative;
+  animation: headFloat 4.5s ease-in-out infinite;
+}
+
+@keyframes headFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50%       { transform: translateY(-10px) scale(1.01); }
+}
+
+.ai-head-core {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%,
+    rgba(200,185,255,0.95) 0%,
+    rgba(140,115,255,0.9) 30%,
+    rgba(80,55,200,0.85) 60%,
+    rgba(40,25,120,0.9) 85%,
+    rgba(10,8,40,1) 100%
+  );
+  box-shadow:
+    0 0 0 2px rgba(165,148,255,0.3),
+    0 0 30px rgba(123,110,255,0.6),
+    0 0 80px rgba(123,110,255,0.35),
+    0 0 160px rgba(123,110,255,0.2),
+    inset 0 -20px 40px rgba(0,0,0,0.3);
+}
+
+/* Face features on the orb */
+.ai-face {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.ai-eyes {
+  position: absolute;
+  top: 42%; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 28px;
+}
+
+.ai-eye {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(165,148,255,0.7);
+  animation: eyeBlink 5s ease-in-out infinite;
+  position: relative;
+}
+
+.ai-eye::after {
+  content: '';
+  position: absolute; inset: 3px;
+  border-radius: 50%;
+  background: rgba(80,55,200,0.8);
+}
+
+@keyframes eyeBlink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.05); }
+}
+
+/* Speaking mouth animation */
+.ai-mouth {
+  position: absolute;
+  top: 58%; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 3px; align-items: flex-end;
+}
+
+.mouth-bar {
+  width: 4px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(255,255,255,0.5);
+  animation: speakBar 0.6s ease-in-out infinite alternate;
+}
+.mouth-bar:nth-child(1) { height: 6px;  animation-delay: 0s; }
+.mouth-bar:nth-child(2) { height: 12px; animation-delay: 0.1s; }
+.mouth-bar:nth-child(3) { height: 16px; animation-delay: 0.05s; }
+.mouth-bar:nth-child(4) { height: 10px; animation-delay: 0.15s; }
+.mouth-bar:nth-child(5) { height: 6px;  animation-delay: 0.08s; }
+
+@keyframes speakBar {
+  0%   { transform: scaleY(0.3); opacity: 0.5; }
+  100% { transform: scaleY(1.3); opacity: 1; }
+}
+
+/* Orbiting rings around the head */
+.orbit-rings {
+  position: absolute; inset: -24px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.orbit-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(165,148,255,0.15);
+  animation: orbitSpin linear infinite;
+}
+
+.orbit-ring:nth-child(1) {
+  inset: 10px;
+  border-color: rgba(165,148,255,0.2);
+  animation-duration: 8s;
+  animation-direction: normal;
+}
+.orbit-ring:nth-child(2) {
+  inset: 0;
+  border-color: rgba(45,206,168,0.15);
+  animation-duration: 12s;
+  animation-direction: reverse;
+}
+.orbit-ring:nth-child(3) {
+  inset: -10px;
+  border-color: rgba(123,110,255,0.1);
+  animation-duration: 16s;
+}
+
+/* Rotating dot on ring */
+.orbit-ring::before {
+  content: '';
+  position: absolute;
+  top: -3px; left: 50%;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(165,148,255,0.8);
+  box-shadow: 0 0 8px rgba(165,148,255,0.6);
+  transform: translateX(-50%);
+}
+
+@keyframes orbitSpin { to { transform: rotate(360deg); } }
+
+/* Neck/body fade */
+.ai-body-fade {
+  width: 80px; height: 60px;
+  background: linear-gradient(180deg,
+    rgba(80,55,200,0.4) 0%,
+    transparent 100%
+  );
+  border-radius: 0 0 50% 50%;
+  margin-top: -10px;
+  filter: blur(8px);
+}
+
+/* Voice wave at bottom of avatar */
+.voice-wave {
+  position: absolute;
+  bottom: 42%; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 4px; align-items: center;
+  z-index: 10;
+}
+
+.vw-bar {
+  width: 3px;
+  border-radius: 2px;
+  background: rgba(165,148,255,0.7);
+  box-shadow: 0 0 8px rgba(165,148,255,0.5);
+  animation: waveAnim 0.8s ease-in-out infinite alternate;
+}
+
+.vw-bar:nth-child(1)  { height: 8px;  animation-delay: 0s; }
+.vw-bar:nth-child(2)  { height: 16px; animation-delay: 0.07s; }
+.vw-bar:nth-child(3)  { height: 24px; animation-delay: 0.14s; }
+.vw-bar:nth-child(4)  { height: 32px; animation-delay: 0.21s; }
+.vw-bar:nth-child(5)  { height: 24px; animation-delay: 0.28s; }
+.vw-bar:nth-child(6)  { height: 40px; animation-delay: 0.14s; }
+.vw-bar:nth-child(7)  { height: 28px; animation-delay: 0.07s; }
+.vw-bar:nth-child(8)  { height: 40px; animation-delay: 0.21s; }
+.vw-bar:nth-child(9)  { height: 28px; animation-delay: 0.14s; }
+.vw-bar:nth-child(10) { height: 20px; animation-delay: 0.07s; }
+.vw-bar:nth-child(11) { height: 32px; animation-delay: 0s; }
+.vw-bar:nth-child(12) { height: 16px; animation-delay: 0.14s; }
+.vw-bar:nth-child(13) { height: 8px;  animation-delay: 0.07s; }
+
+@keyframes waveAnim {
+  0%   { transform: scaleY(0.25); opacity: 0.4; }
+  100% { transform: scaleY(1);    opacity: 1; }
+}
+
+/* Ambient floor glow */
+.floor-glow {
+  position: absolute;
+  bottom: 30%; left: 50%;
+  transform: translateX(-50%);
+  width: 280px; height: 60px;
+  background: radial-gradient(ellipse, rgba(123,110,255,0.4) 0%, transparent 70%);
+  filter: blur(20px);
+  z-index: 5;
+}
+
+/* === USER PIP (picture-in-picture) === */
+.user-pip {
+  position: absolute;
+  top: 72px; right: 16px;
+  width: 96px; height: 130px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.18);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(255,255,255,0.05);
+  z-index: 50;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-pip:hover {
+  transform: scale(1.04);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.8), 0 0 0 2px rgba(165,148,255,0.4);
+}
+
+/* Simulated user camera feed */
+.user-cam-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70px 90px at 50% 40%, rgba(255,200,170,0.3) 0%, transparent 70%),
+    linear-gradient(160deg, #1a0e2a 0%, #2d1a3d 40%, #1a1230 100%);
+}
+
+.user-cam-person {
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 60px; height: 100px;
+}
+
+/* Silhouette person */
+.person-head {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f5d0b0, #e8b896);
+  margin: 0 auto 2px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.person-body {
+  width: 44px; height: 50px;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(160deg, #3a2660, #2a1a50);
+  margin: 0 auto;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.pip-label {
+  position: absolute;
+  bottom: 6px; left: 0; right: 0;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  font-family: var(--f-mono);
+  letter-spacing: 0.3px;
+}
+
+.pip-drag-hint {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 16px; height: 16px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+  opacity: 0.7;
+}
+
+/* === TRANSCRIPT OVERLAY === */
+.transcript-overlay {
+  position: absolute;
+  bottom: 210px; left: 20px; right: 20px;
+  z-index: 40;
+}
+
+.transcript-bubble {
+  background: rgba(5,5,8,0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(165,148,255,0.2);
+  border-radius: 16px;
+  padding: 12px 16px;
+  position: relative;
+}
+
+.transcript-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--nr-aurora-2);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.transcript-name::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--nr-aurora);
+  animation: speakPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes speakPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+.transcript-text {
+  font-size: 15px;
+  color: rgba(240,240,248,0.95);
+  line-height: 1.5;
+  letter-spacing: -0.1px;
+}
+
+.transcript-text .highlight {
+  color: var(--nr-aurora-2);
+  font-style: italic;
+}
+
+/* === CALL CONTROLS === */
+.call-controls {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 190px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 40px;
+}
+
+/* Liquid glass backdrop for controls */
+.controls-glass {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(5,5,10,0.6) 30%,
+    rgba(5,5,10,0.92) 70%,
+    rgba(5,5,10,0.98) 100%
+  );
+  backdrop-filter: blur(0px);
+}
+
+/* Duration badge */
+.call-duration {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+  z-index: 1;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.call-duration::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--nr-mint);
+  animation: speakPulse 2s ease-in-out infinite;
+}
+
+/* Primary controls row */
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 1;
+}
+
+.ctrl-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.ctrl-btn:hover .ctrl-icon { transform: scale(1.08); }
+.ctrl-btn:active .ctrl-icon { transform: scale(0.93); }
+
+.ctrl-icon {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glass buttons */
+.ctrl-glass {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(16px);
+}
+
+.ctrl-glass::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 50%;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50% 50% 0 0;
+}
+
+/* Active / muted state */
+.ctrl-active {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.ctrl-muted {
+  background: rgba(255,107,107,0.2);
+  border-color: rgba(255,107,107,0.35);
+}
+
+/* END CALL button */
+.ctrl-end {
+  background: linear-gradient(135deg, #FF3B5C, #FF6B6B);
+  border: none;
+  box-shadow: 0 6px 24px rgba(255,59,92,0.45);
+  width: 68px; height: 68px;
+  font-size: 26px;
+}
+
+.ctrl-end::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 50%;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50% 50% 0 0;
+}
+
+.ctrl-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+/* === EMOTION INDICATOR (top left) === */
+.emotion-badge {
+  position: absolute;
+  top: 72px; left: 16px;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(5,5,8,0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(165,148,255,0.2);
+  border-radius: 20px;
+  padding: 6px 12px;
+  z-index: 50;
+  font-size: 11px;
+}
+
+.emotion-icon { font-size: 14px; }
+.emotion-text { color: var(--nr-aurora-2); font-weight: 600; }
+.emotion-sub  { color: var(--t-tertiary); font-size: 10px; }
+
+/* === MODE PILL (top center) === */
+.mode-pill {
+  position: absolute;
+  top: 72px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(5,5,8,0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(165,148,255,0.2);
+  border-radius: 20px;
+  padding: 5px 14px;
+  z-index: 50;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.mode-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--nr-aurora);
+  animation: speakPulse 1.5s ease-in-out infinite;
+}
+
+/* =====================
+   SPECS PANEL (right column)
+===================== */
+.specs-panel {
+  padding-top: 8px;
+}
+
+.spec-block {
+  margin-bottom: 36px;
+}
+
+.spec-block-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--nr-aurora);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--nr-border);
+}
+
+.spec-block-title::after { content: ''; flex: 1; height: 1px; background: var(--nr-border); }
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  gap: 20px;
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-key { font-size: 13px; color: var(--t-secondary); line-height: 1.4; flex: 1; }
+.spec-val { font-size: 12px; color: var(--t-primary); font-family: var(--f-mono); text-align: right; line-height: 1.6; max-width: 260px; }
+
+/* Component inventory */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.inv-item {
+  background: var(--nr-elevated);
+  border: 1px solid var(--nr-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+
+.inv-num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(123,110,255,0.15);
+  border: 1px solid rgba(123,110,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--nr-aurora-2);
+  flex-shrink: 0; margin-top: 1px;
+}
+
+.inv-content {}
+.inv-name { font-size: 13px; font-weight: 600; color: var(--t-primary); margin-bottom: 2px; }
+.inv-desc { font-size: 11px; color: var(--t-tertiary); line-height: 1.4; }
+
+/* State cards */
+.states-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.state-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--nr-elevated);
+  border: 1px solid var(--nr-border);
+  border-radius: var(--r-full, 9999px);
+  padding: 6px 12px;
+  font-size: 12px; font-weight: 600;
+}
+
+.sb-aurora { border-color: rgba(123,110,255,0.35); color: var(--nr-aurora-2); background: rgba(123,110,255,0.1); }
+.sb-mint   { border-color: rgba(45,206,168,0.35);  color: var(--nr-mint);     background: rgba(45,206,168,0.1); }
+.sb-amber  { border-color: rgba(255,179,71,0.35);  color: var(--nr-amber);    background: rgba(255,179,71,0.1); }
+.sb-coral  { border-color: rgba(255,107,107,0.35); color: var(--nr-coral);    background: rgba(255,107,107,0.1); }
+
+/* Designer note card */
+.designer-note {
+  background: var(--nr-surface);
+  border: 1px solid var(--nr-border);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.designer-note::before {
+  content: '';
+  position: absolute; top: 0; left: 24px;
+  height: 2px; width: 40px;
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(90deg, var(--nr-aurora), var(--nr-mint));
+}
+
+.note-eyebrow {
+  font-family: var(--f-mono);
+  font-size: 10px; color: var(--nr-aurora);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.note-title {
+  font-size: 16px; font-weight: 700;
+  color: var(--t-primary); margin-bottom: 8px;
+  letter-spacing: -0.2px;
+}
+
+.note-body {
+  font-size: 13.5px; color: var(--t-secondary);
+  line-height: 1.75;
+}
+
+/* Gesture row */
+.gesture-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.gesture-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--nr-elevated);
+  border: 1px solid var(--nr-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px; color: var(--t-secondary);
+}
+.gesture-pill .gicon { font-size: 16px; }
+
+/* Accessibility items */
+.a11y-list-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px;
+}
+.a11y-list-item:last-child { border-bottom: none; }
+.a11y-check {
+  width: 20px; height: 20px; flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(45,206,168,0.12);
+  border: 1px solid rgba(45,206,168,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--nr-mint);
+}
+.a11y-text { color: var(--t-secondary); line-height: 1.5; }
+.a11y-text strong { color: var(--t-primary); font-weight: 600; }
+
+/* Micro-interaction table */
+.mi-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12.5px; margin-bottom: 24px;
+}
+.mi-table th {
+  text-align: left; padding: 10px 12px;
+  background: var(--nr-elevated);
+  color: var(--t-tertiary);
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--nr-border);
+}
+.mi-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--t-secondary); vertical-align: middle;
+}
+.mi-table tr:last-child td { border-bottom: none; }
+
+.code-pill {
+  display: inline-block; padding: 2px 7px;
+  background: var(--nr-elevated); border: 1px solid var(--nr-border);
+  border-radius: 5px; font-family: var(--f-mono);
+  font-size: 10px; color: var(--nr-aurora-2);
+}
+
+/* =====================
+   BOTTOM STATES SECTION
+===================== */
+.states-section {
+  width: 100%; max-width: 1400px;
+  padding: 0 48px 80px;
+}
+
+.states-section-header {
+  display: flex; align-items: center; gap: 20px;
+  margin-bottom: 32px;
+}
+.states-section-num {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--nr-aurora); letter-spacing: 2px; text-transform: uppercase;
+}
+.states-section-title {
+  font-family: var(--f-display); font-size: 32px;
+  font-weight: 400; letter-spacing: -0.8px; color: var(--t-primary);
+}
+.states-section-line { flex: 1; height: 1px; background: var(--nr-border); }
+
+/* Mini phone frames for states */
+.mini-phones-row {
+  display: flex; gap: 20px; overflow-x: auto;
+  padding-bottom: 20px; scrollbar-width: none;
+}
+.mini-phones-row::-webkit-scrollbar { display: none; }
+
+.mini-phone-unit {
+  flex-shrink: 0; display: flex;
+  flex-direction: column; gap: 12px; align-items: center;
+}
+
+.mini-phone-label {
+  font-family: var(--f-mono); font-size: 10px;
+  color: var(--t-tertiary); letter-spacing: 1.5px;
+  text-transform: uppercase; text-align: center;
+}
+
+.mini-frame {
+  width: 220px; height: 476px;
+  background: #060610;
+  border-radius: 36px;
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.7), 0 0 40px rgba(123,110,255,0.06);
+  flex-shrink: 0;
+}
+
+/* =====================
+   MINI SCREEN STATES
+===================== */
+
+/* State 1: Incoming Call */
+.incoming-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 200px 300px at 50% 40%, rgba(60,45,140,0.8) 0%, rgba(10,8,30,0.95) 70%),
+    var(--nr-void);
+}
+
+.incoming-content {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: space-between;
+  padding: 48px 20px 32px;
+}
+
+.incoming-avatar {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--nr-aurora), var(--nr-mint));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+  box-shadow: 0 0 0 12px rgba(123,110,255,0.08), 0 0 0 24px rgba(123,110,255,0.04);
+  animation: incomingPulse 2s ease-in-out infinite;
+}
+
+@keyframes incomingPulse {
+  0%, 100% { box-shadow: 0 0 0 12px rgba(123,110,255,0.1), 0 0 0 24px rgba(123,110,255,0.05); }
+  50%       { box-shadow: 0 0 0 18px rgba(123,110,255,0.15), 0 0 0 36px rgba(123,110,255,0.07); }
+}
+
+.incoming-name {
+  font-family: var(--f-display);
+  font-size: 24px; font-weight: 400; color: var(--t-primary);
+  text-align: center; letter-spacing: -0.5px;
+}
+
+.incoming-sub {
+  font-size: 13px; color: var(--t-secondary);
+  text-align: center;
+}
+
+.incoming-actions {
+  display: flex; gap: 40px; align-items: center;
+}
+
+.inc-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer;
+}
+
+.inc-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 26px;
+}
+
+.inc-decline { background: linear-gradient(135deg, #FF3B5C, #FF6B6B); box-shadow: 0 4px 20px rgba(255,59,92,0.4); }
+.inc-accept  { background: linear-gradient(135deg, #2DCEA8, #5FF0D0); box-shadow: 0 4px 20px rgba(45,206,168,0.4); }
+
+.inc-label { font-size: 12px; color: var(--t-tertiary); }
+
+/* State 2: Muted state */
+.muted-state .ctrl-btn:first-child .ctrl-icon {
+  background: rgba(255,107,107,0.25) !important;
+  border-color: rgba(255,107,107,0.4) !important;
+}
+
+/* State 3: Minimized / PiP mode */
+.minimized-bg {
+  position: absolute; inset: 0;
+  background: var(--nr-deep);
+}
+
+.minimized-content {
+  position: absolute; inset: 0;
+  padding: 16px;
+  display: flex; flex-direction: column;
+}
+
+.min-status-bar {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 12px;
+  font-size: 11px; color: rgba(255,255,255,0.7);
+  font-family: var(--f-ui); font-weight: 700;
+}
+
+.min-pip-call {
+  background: linear-gradient(135deg, rgba(60,45,140,0.9), rgba(20,15,60,0.9));
+  border: 1px solid rgba(165,148,255,0.3);
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.min-pip-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--nr-aurora), var(--nr-mint));
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  flex-shrink: 0;
+}
+
+.min-pip-info { flex: 1; }
+.min-pip-name { font-size: 13px; font-weight: 600; color: var(--t-primary); }
+.min-pip-dur  { font-size: 11px; color: var(--nr-mint); font-family: var(--f-mono); }
+.min-pip-expand { font-size: 16px; color: var(--t-tertiary); }
+
+/* fake app content beneath */
+.min-app-content {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 8px;
+  opacity: 0.5;
+}
+
+.min-fake-row {
+  height: 40px; border-radius: 10px;
+  background: var(--nr-elevated); border: 1px solid var(--nr-border);
+}
+
+/* State 4: Reaction floating */
+.reaction-layer {
+  position: absolute; inset: 0; pointer-events: none; z-index: 55;
+  overflow: hidden;
+}
+
+.reaction-emoji {
+  position: absolute;
+  font-size: 28px;
+  animation: reactionFloat 3s ease-out forwards;
+}
+
+.reaction-emoji:nth-child(1) { left: 20%; animation-delay: 0s;    bottom: -40px; }
+.reaction-emoji:nth-child(2) { left: 50%; animation-delay: 0.4s;  bottom: -40px; }
+.reaction-emoji:nth-child(3) { left: 75%; animation-delay: 0.8s;  bottom: -40px; }
+.reaction-emoji:nth-child(4) { left: 35%; animation-delay: 1.2s;  bottom: -40px; }
+
+@keyframes reactionFloat {
+  0%   { transform: translateY(0) scale(0) rotate(-10deg); opacity: 0; }
+  15%  { transform: translateY(-30px) scale(1.2) rotate(5deg); opacity: 1; }
+  85%  { opacity: 0.8; }
+  100% { transform: translateY(-300px) scale(0.8) rotate(15deg); opacity: 0; }
+}
+
+/* =====================
+   FOOTER
+===================== */
+.page-footer {
+  width: 100%; max-width: 1400px;
+  padding: 0 48px 64px;
+  border-top: 1px solid var(--nr-border);
+  padding-top: 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+}
+
+.footer-brand {
+  font-family: var(--f-display);
+  font-size: 22px; font-weight: 400;
+  color: var(--t-primary); letter-spacing: -0.4px;
+}
+
+.footer-meta {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--t-tertiary); letter-spacing: 0.5px;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 1100px) {
+  .main-layout { grid-template-columns: 1fr; gap: 40px; }
+  .phone-wrap { position: static; }
+  :root { --phone-w: 340px; --phone-h: 736px; }
+}
+
+@media (max-width: 600px) {
+  .page-header, .main-layout, .states-section, .page-footer { padding-left: 20px; padding-right: 20px; }
+  :root { --phone-w: 100%; --phone-h: auto; }
+  .phone-frame { height: 700px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+  <div class="eyebrow">Nearu AI · iOS 18 · Screen 09 / Video Call</div>
+  <h1 class="page-title">Face-to-Face<br>with <em>Aurora</em></h1>
+  <p class="page-subtitle">The most intimate screen in the Nearu system. A fully animated AI avatar with real-time lip sync, voice waveform, emotion detection, and live transcription — all within an Apple HIG-compliant video call interface.</p>
+</header>
+
+<!-- MAIN LAYOUT: phone + specs -->
+<div class="main-layout">
+
+  <!-- LEFT: Phone Frame -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+
+      <!-- Dynamic Island — expanded during call -->
+      <div class="dynamic-island expanded" id="di">
+        <div class="di-camera"></div>
+        <div class="di-call-info">
+          <div class="di-call-avatar">✦</div>
+          <div class="di-call-text">
+            <div class="di-call-name">Aurora · Video Call</div>
+            <div class="di-call-dur" id="di-dur">12:34</div>
+          </div>
+        </div>
+        <div class="di-call-end" title="End call">📵</div>
+      </div>
+
+      <!-- Status bar -->
+      <div class="status-bar">
+        <span class="sb-time">9:41</span>
+        <div class="sb-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+
+      <!-- VIDEO CALL SCREEN -->
+      <div class="vc-screen">
+
+        <!-- === AURORA FULL-SCREEN AVATAR === -->
+        <div class="avatar-bg">
+          <div class="avatar-env"></div>
+
+          <!-- Particle field -->
+          <div class="particle-field" id="particles"></div>
+
+          <!-- Main AI figure -->
+          <div class="ai-figure">
+            <div class="ai-head">
+              <div class="ai-head-core"></div>
+              <div class="ai-face">
+                <div class="ai-eyes">
+                  <div class="ai-eye"></div>
+                  <div class="ai-eye" style="animation-delay:0.15s;"></div>
+                </div>
+                <div class="ai-mouth">
+                  <div class="mouth-bar"></div>
+                  <div class="mouth-bar"></div>
+                  <div class="mouth-bar"></div>
+                  <div class="mouth-bar"></div>
+                  <div class="mouth-bar"></div>
+                </div>
+              </div>
+              <div class="orbit-rings">
+                <div class="orbit-ring"></div>
+                <div class="orbit-ring"></div>
+                <div class="orbit-ring"></div>
+              </div>
+            </div>
+            <div class="ai-body-fade"></div>
+          </div>
+
+          <!-- Floor glow -->
+          <div class="floor-glow"></div>
+
+          <!-- Voice waveform at avatar mouth level -->
+          <div class="voice-wave">
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+            <div class="vw-bar"></div>
+          </div>
+        </div>
+
+        <!-- === MODE PILL === -->
+        <div class="mode-pill">
+          <div class="mode-dot"></div>
+          Deep Focus Mode
+        </div>
+
+        <!-- === EMOTION BADGE === -->
+        <div class="emotion-badge">
+          <span class="emotion-icon">💙</span>
+          <div>
+            <div class="emotion-text">Calm</div>
+            <div class="emotion-sub">Aurora senses</div>
+          </div>
+        </div>
+
+        <!-- === USER PiP === -->
+        <div class="user-pip" id="user-pip" title="Drag to reposition">
+          <div class="user-cam-bg"></div>
+          <div class="user-cam-person">
+            <div class="person-head"></div>
+            <div class="person-body"></div>
+          </div>
+          <div class="pip-label">You</div>
+          <div class="pip-drag-hint">⠿</div>
+        </div>
+
+        <!-- === LIVE TRANSCRIPT === -->
+        <div class="transcript-overlay">
+          <div class="transcript-bubble">
+            <div class="transcript-name">Aurora is speaking</div>
+            <div class="transcript-text">
+              "I think what's holding you back is the <span class="highlight">activation energy</span>, not the idea itself. Let's break it into one small step right now—"
+            </div>
+          </div>
+        </div>
+
+        <!-- === CALL CONTROLS === -->
+        <div class="call-controls">
+          <div class="controls-glass"></div>
+
+          <div class="call-duration">
+            <span id="call-timer">12:34</span>
+          </div>
+
+          <div class="controls-row">
+            <!-- Mic -->
+            <div class="ctrl-btn" id="mic-btn" onclick="toggleMic(this)">
+              <div class="ctrl-icon ctrl-glass" id="mic-icon">🎙️</div>
+              <span class="ctrl-label" id="mic-label">Mute</span>
+            </div>
+
+            <!-- Camera -->
+            <div class="ctrl-btn" id="cam-btn" onclick="toggleCam(this)">
+              <div class="ctrl-icon ctrl-glass" id="cam-icon">📷</div>
+              <span class="ctrl-label" id="cam-label">Camera</span>
+            </div>
+
+            <!-- END CALL — center, larger -->
+            <div class="ctrl-btn" onclick="endCall()">
+              <div class="ctrl-icon ctrl-end">📵</div>
+              <span class="ctrl-label" style="color:rgba(255,107,107,0.7);">End</span>
+            </div>
+
+            <!-- Reactions -->
+            <div class="ctrl-btn" onclick="sendReaction()">
+              <div class="ctrl-icon ctrl-glass">😊</div>
+              <span class="ctrl-label">React</span>
+            </div>
+
+            <!-- More -->
+            <div class="ctrl-btn">
+              <div class="ctrl-icon ctrl-glass">⋯</div>
+              <span class="ctrl-label">More</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reaction layer (populated by JS) -->
+        <div class="reaction-layer" id="reaction-layer"></div>
+
+      </div><!-- /vc-screen -->
+    </div><!-- /phone-frame -->
+  </div>
+
+  <!-- RIGHT: Specs Panel -->
+  <div class="specs-panel">
+
+    <!-- Component inventory -->
+    <div class="spec-block">
+      <div class="spec-block-title">Component Inventory</div>
+      <div class="inventory-grid">
+        <div class="inv-item">
+          <div class="inv-num">1</div>
+          <div class="inv-content">
+            <div class="inv-name">Dynamic Island</div>
+            <div class="inv-desc">Expands during call — shows avatar, name, timer, end button</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">2</div>
+          <div class="inv-content">
+            <div class="inv-name">Aurora Avatar (3D Orb)</div>
+            <div class="inv-desc">Full-screen animated AI presence with eyes, mouth, orbiting rings</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">3</div>
+          <div class="inv-content">
+            <div class="inv-name">User PiP (Draggable)</div>
+            <div class="inv-desc">96×130px corner camera feed, tap to swap with main view</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">4</div>
+          <div class="inv-content">
+            <div class="inv-name">Voice Waveform</div>
+            <div class="inv-desc">13-bar realtime amplitude visualizer. Stops when user speaks</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">5</div>
+          <div class="inv-content">
+            <div class="inv-name">Live Transcript Bubble</div>
+            <div class="inv-desc">Liquid-glass overlay with animated speaker indicator</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">6</div>
+          <div class="inv-content">
+            <div class="inv-name">Emotion Detection Badge</div>
+            <div class="inv-desc">Aurora reads vocal tone & displays empathy state (top-left)</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">7</div>
+          <div class="inv-content">
+            <div class="inv-name">Mode Pill</div>
+            <div class="inv-desc">Shows active session context: Deep Focus, Coaching, Journaling</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">8</div>
+          <div class="inv-content">
+            <div class="inv-name">Control Bar (5 buttons)</div>
+            <div class="inv-desc">Liquid Glass: Mute, Camera, End Call, React, More. End = 68px</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">9</div>
+          <div class="inv-content">
+            <div class="inv-name">Particle Field</div>
+            <div class="inv-desc">Generative floating particles from Avatar orb, atmosphere only</div>
+          </div>
+        </div>
+        <div class="inv-item">
+          <div class="inv-num">10</div>
+          <div class="inv-content">
+            <div class="inv-name">Call Timer</div>
+            <div class="inv-desc">Mono font above controls, mint pulse dot, counts up</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Hierarchy -->
+    <div class="spec-block">
+      <div class="spec-block-title">Visual Hierarchy</div>
+      <div class="spec-row"><span class="spec-key">1st — Aurora avatar (full screen)</span><span class="spec-val">100% viewport, centered. User's eye immediately meets Aurora's eyes</span></div>
+      <div class="spec-row"><span class="spec-key">2nd — Live transcript bubble</span><span class="spec-val">Bottom ⅓, high contrast glass. User reads what Aurora is saying</span></div>
+      <div class="spec-row"><span class="spec-key">3rd — User PiP camera</span><span class="spec-val">Top-right corner, 96×130px. Small but present — confirms camera is on</span></div>
+      <div class="spec-row"><span class="spec-key">4th — Control bar</span><span class="spec-val">Bottom, fades into black gradient. Available but not distracting</span></div>
+      <div class="spec-row"><span class="spec-key">5th — Emotion badge + Mode pill</span><span class="spec-key">Tertiary, top edge. Ambient info, not urgent</span></div>
+    </div>
+
+    <!-- Layout specs -->
+    <div class="spec-block">
+      <div class="spec-block-title">Layout Specifications</div>
+      <div class="spec-row"><span class="spec-key">Aurora avatar zone</span><span class="spec-val">Full screen (393×852pt)<br>Centered at Y 46%</span></div>
+      <div class="spec-row"><span class="spec-key">Orb head size</span><span class="spec-val">160×160pt<br>Orbit rings: –10 to +10pt offset</span></div>
+      <div class="spec-row"><span class="spec-key">User PiP position</span><span class="spec-val">top: 72pt, right: 16pt<br>Size: 96×130pt, r:18pt</span></div>
+      <div class="spec-row"><span class="spec-key">Transcript bubble</span><span class="spec-val">bottom: 210pt, H:±, margin:20pt<br>Blur: 24px, saturate(180%)</span></div>
+      <div class="spec-row"><span class="spec-key">Control bar height</span><span class="spec-val">190pt from bottom<br>Gradient fade: 0→98% opacity</span></div>
+      <div class="spec-row"><span class="spec-key">Control buttons</span><span class="spec-val">4× 58pt (glass) + 1× 68pt (end)<br>Gap: 14pt, row centered</span></div>
+      <div class="spec-row"><span class="spec-key">Dynamic Island</span><span class="spec-val">Expanded: 300×56pt, r:28pt<br>Default: 126×37pt</span></div>
+      <div class="spec-row"><span class="spec-key">Safe areas</span><span class="spec-val">Top: Dynamic Island + 14pt<br>Bottom: 40pt home indicator clearance</span></div>
+    </div>
+
+    <!-- Avatar animation specs -->
+    <div class="spec-block">
+      <div class="spec-block-title">Avatar Animation Specs</div>
+      <div class="spec-row"><span class="spec-key">Head float</span><span class="spec-val">Y: 0→-10pt, 4.5s ease-in-out loop<br>Scale: 1→1.01 subtle breath</span></div>
+      <div class="spec-row"><span class="spec-key">Eye blink</span><span class="spec-val">scaleY 1→0.05, every 5s<br>Random offset per eye: +0.15s</span></div>
+      <div class="spec-row"><span class="spec-key">Mouth (speaking)</span><span class="spec-val">5 bars, staggered 0–0.15s delay<br>scaleY 0.25→1.3, 0.6s alternating</span></div>
+      <div class="spec-row"><span class="spec-key">Orbit rings</span><span class="spec-val">3 rings: 8s / 12s / 16s rotation<br>Alternating directions</span></div>
+      <div class="spec-row"><span class="spec-key">Voice waveform</span><span class="spec-val">13 bars, random amplitude per bar<br>0.8s alternate, 0–0.28s stagger</span></div>
+      <div class="spec-row"><span class="spec-key">Environment pulse</span><span class="spec-val">brightness 0.85→1.05 + hue-rotate 8°<br>4s ease-in-out infinite alternate</span></div>
+      <div class="spec-row"><span class="spec-key">Particle field</span><span class="spec-val">8–12 particles at any time<br>Y drift –200pt, random X ±40pt</span></div>
+      <div class="spec-row"><span class="spec-key">Listening state</span><span class="spec-val">Mouth bars frozen at 0.15 opacity<br>Eye highlight brightens 20%<br>Orbit ring speed ×0.5</span></div>
+    </div>
+
+    <!-- Interaction specs -->
+    <div class="spec-block">
+      <div class="spec-block-title">Interaction Specifications</div>
+      <table class="mi-table">
+        <thead>
+          <tr><th>Element</th><th>Gesture</th><th>Result</th><th>Haptic</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="color:var(--t-primary);">User PiP</td><td>Tap</td><td>Swap: user becomes main, Aurora moves to PiP</td><td><span class="code-pill">light</span></td></tr>
+          <tr><td style="color:var(--t-primary);">User PiP</td><td>Drag</td><td>Reposition to any corner with snap points</td><td><span class="code-pill">selection</span></td></tr>
+          <tr><td style="color:var(--t-primary);">Mic button</td><td>Tap</td><td>Toggle mute — icon changes to 🔇, btn turns coral</td><td><span class="code-pill">medium</span></td></tr>
+          <tr><td style="color:var(--t-primary);">Camera button</td><td>Tap</td><td>Toggle camera off — PiP shows avatar placeholder</td><td><span class="code-pill">medium</span></td></tr>
+          <tr><td style="color:var(--t-primary);">End call btn</td><td>Tap</td><td>Confirmation sheet slides up (no instant end)</td><td><span class="code-pill">error</span></td></tr>
+          <tr><td style="color:var(--t-primary);">React button</td><td>Tap</td><td>Emoji picker grid appears (contextual menu)</td><td><span class="code-pill">light</span></td></tr>
+          <tr><td style="color:var(--t-primary);">Avatar (orb)</td><td>Tap</td><td>Transcript panel expands full view (all history)</td><td>none</td></tr>
+          <tr><td style="color:var(--t-primary);">Screen</td><td>Swipe up</td><td>PiP mode: call shrinks to top banner, app available</td><td><span class="code-pill">light</span></td></tr>
+          <tr><td style="color:var(--t-primary);">More button</td><td>Tap</td><td>Action sheet: Share screen, Settings, Snapshot, Notes</td><td><span class="code-pill">light</span></td></tr>
+          <tr><td style="color:var(--t-primary);">Dynamic Island</td><td>Tap</td><td>Collapses / expands call info in-place</td><td><span class="code-pill">selection</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- States -->
+    <div class="spec-block">
+      <div class="spec-block-title">Screen States</div>
+      <div class="states-row">
+        <div class="state-badge sb-aurora">✦ Aurora Speaking</div>
+        <div class="state-badge sb-mint">👂 Listening</div>
+        <div class="state-badge sb-amber">💭 Thinking</div>
+        <div class="state-badge sb-coral">🔇 User Muted</div>
+        <div class="state-badge" style="background:var(--nr-elevated); color:var(--t-secondary); border-color:var(--nr-border);">📵 Incoming Call</div>
+        <div class="state-badge" style="background:var(--nr-elevated); color:var(--t-secondary); border-color:var(--nr-border);">⬆ PiP Minimized</div>
+      </div>
+      <div class="spec-row"><span class="spec-key">Speaking state</span><span class="spec-val">Mouth bars animate at full amplitude. Waveform active. Transcript updates in real-time</span></div>
+      <div class="spec-row"><span class="spec-key">Listening state</span><span class="spec-val">Mouth freezes, eyes brighten. Waveform switches to user's audio. Transcript shows "Listening…" with dots</span></div>
+      <div class="spec-row"><span class="spec-key">Thinking state</span><span class="spec-val">Orbit rings slow, orb dims 15%, single pulsing dot replaces waveform. Duration: ≤2s then auto-speak</span></div>
+      <div class="spec-row"><span class="spec-key">Muted state</span><span class="spec-val">Mic button becomes coral red. "Muted" text overlays user PiP. Aurora enters listening state</span></div>
+      <div class="spec-row"><span class="spec-key">Camera off</span><span class="spec-val">PiP shows blurred gradient placeholder. "Camera paused" label. Aurora reacts: "Take your time 🙂"</span></div>
+    </div>
+
+    <!-- Gestures -->
+    <div class="spec-block">
+      <div class="spec-block-title">Gestures</div>
+      <div class="gesture-row">
+        <div class="gesture-pill"><span class="gicon">👆</span> Tap PiP → Swap views</div>
+        <div class="gesture-pill"><span class="gicon">✊</span> Drag PiP → Reposition</div>
+        <div class="gesture-pill"><span class="gicon">⬆️</span> Swipe up → Minimize to PiP</div>
+        <div class="gesture-pill"><span class="gicon">👆</span> Tap avatar → Full transcript</div>
+        <div class="gesture-pill"><span class="gicon">⬇️</span> Pull down → Expand from PiP</div>
+        <div class="gesture-pill"><span class="gicon">📳</span> Shake → Trigger quick note</div>
+      </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="spec-block">
+      <div class="spec-block-title">Accessibility</div>
+      <div class="a11y-list-item">
+        <div class="a11y-check">✓</div>
+        <div class="a11y-text"><strong>VoiceOver on Aurora:</strong> "Aurora avatar, currently speaking" — trait: .image + live region. Transcript read aloud automatically via .accessibilityLiveRegion = .polite</div>
+      </div>
+      <div class="a11y-list-item">
+        <div class="a11y-check">✓</div>
+        <div class="a11y-text"><strong>Reduce Motion:</strong> All animations disabled — avatar becomes static portrait, waveform becomes simple bar chart, particles removed. Call remains fully functional</div>
+      </div>
+      <div class="a11y-list-item">
+        <div class="a11y-check">✓</div>
+        <div class="a11y-text"><strong>All controls 44×44pt minimum.</strong> End call button: 68pt. Labels below every icon. Color never sole indicator — mute shows 🔇 icon + "Muted" text + coral color</div>
+      </div>
+      <div class="a11y-list-item">
+        <div class="a11y-check">✓</div>
+        <div class="a11y-text"><strong>Transcript accessibility:</strong> Live caption always visible, 15px minimum, expandable to full-screen. User can enable audio description for avatar emotional state</div>
+      </div>
+      <div class="a11y-list-item">
+        <div class="a11y-check">✓</div>
+        <div class="a11y-text"><strong>Keyboard / Switch Control:</strong> Focus order: Mic → Camera → End → React → More → PiP. End call requires explicit confirmation, preventing accidental termination</div>
+      </div>
+      <div class="a11y-list-item">
+        <div class="a11y-check">✓</div>
+        <div class="a11y-text"><strong>Contrast ratios:</strong> Transcript text on glass: 9.2:1 ✓ · Control labels: 4.7:1 ✓ · Duration timer: 5.1:1 ✓</div>
+      </div>
+    </div>
+
+    <!-- Designer note -->
+    <div class="designer-note">
+      <div class="note-eyebrow">Designer's Note · 09</div>
+      <div class="note-title">Why an Orb, Not a Human Face?</div>
+      <div class="note-body">The temptation was to render a hyperrealistic human face for Aurora. We deliberately chose an abstract orb for three reasons. First, the Uncanny Valley problem — a near-human face that's slightly "off" erodes trust instantly, the exact opposite of Nearu's core mission. Second, an orb is permission to be <em>better than human</em> — the aurora-gradient skin, orbiting rings, and glowing eyes communicate a presence that is genuinely alien and wonderful, not merely a digital copy. Third, users in research sessions reported feeling <em>less judged</em> by the orb during vulnerable conversations. The abstract form invites openness. The orbiting rings echo the Nearu logo and brand language, making Aurora instantly recognizable as a Nearu creation, not a generic chatbot. The speaking waveform at the mouth position gives Aurora a "voice you can see," which tested significantly higher in emotional engagement than animated lips.</div>
+    </div>
+
+    <div class="designer-note">
+      <div class="note-eyebrow">Designer's Note · 10</div>
+      <div class="note-title">The PiP Camera is About Accountability</div>
+      <div class="note-body">The user's own camera preview isn't just a technical requirement — it's a behavioral design choice. Seeing yourself during a coaching or journaling session with Aurora creates a mild accountability loop. "I can see myself — I should be present." The PiP is sized at exactly 96×130pt: large enough to read your own expression, small enough to not distract from Aurora. The drag-to-reposition interaction with corner snap points lets users move it out of sight on days they don't want that accountability. That optionality is itself a trust signal.</div>
+    </div>
+
+  </div><!-- /specs-panel -->
+</div><!-- /main-layout -->
+
+<!-- =====================
+     BOTTOM: MINI STATES
+===================== -->
+<div class="states-section">
+  <div class="states-section-header">
+    <span class="states-section-num">States</span>
+    <span class="states-section-title">All Call States</span>
+    <div class="states-section-line"></div>
+  </div>
+
+  <div class="mini-phones-row">
+
+    <!-- Incoming Call -->
+    <div class="mini-phone-unit">
+      <div class="mini-phone-label">Incoming Call</div>
+      <div class="mini-frame">
+        <div class="incoming-bg"></div>
+        <div class="incoming-content">
+          <div>
+            <div class="incoming-avatar">✦</div>
+          </div>
+          <div>
+            <div class="incoming-name">Aurora</div>
+            <div class="incoming-sub" style="margin-top:6px; font-size:12px; color:var(--t-secondary);">Nearu AI · Video</div>
+            <div style="margin-top:8px; font-size:13px; color:rgba(165,148,255,0.7); text-align:center; font-style:italic;">"Your morning check-in 🌅"</div>
+          </div>
+          <div class="incoming-actions">
+            <div class="inc-btn">
+              <div class="inc-icon inc-decline">📵</div>
+              <div class="inc-label">Decline</div>
+            </div>
+            <div class="inc-btn">
+              <div class="inc-icon inc-accept">📹</div>
+              <div class="inc-label">Accept</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active — Listening -->
+    <div class="mini-phone-unit">
+      <div class="mini-phone-label">Listening State</div>
+      <div class="mini-frame">
+        <div style="position:absolute; inset:0; background:radial-gradient(ellipse 180px 240px at 50% 42%, rgba(40,30,100,0.9) 0%, var(--nr-void) 80%);">
+        </div>
+        <!-- Dimmed avatar -->
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-58%); width:120px; height:120px;">
+          <div style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 38% 35%, rgba(160,145,210,0.7) 0%, rgba(60,45,130,0.8) 50%, rgba(20,15,60,0.9) 100%); box-shadow:0 0 20px rgba(123,110,255,0.3), 0 0 50px rgba(123,110,255,0.15); filter:brightness(0.7);">
+          </div>
+          <div style="position:absolute; inset:30px 20px; display:flex; justify-content:center; align-items:center; gap:20px;">
+            <div style="width:10px; height:10px; border-radius:50%; background:rgba(200,185,255,0.7); box-shadow:0 0 8px rgba(255,255,255,0.5);"></div>
+            <div style="width:10px; height:10px; border-radius:50%; background:rgba(200,185,255,0.7); box-shadow:0 0 8px rgba(255,255,255,0.5);"></div>
+          </div>
+        </div>
+        <!-- User waveform (when user speaks) -->
+        <div style="position:absolute; bottom:140px; left:50%; transform:translateX(-50%); display:flex; gap:4px; align-items:center;">
+          <div style="width:3px; height:10px; background:rgba(45,206,168,0.7); border-radius:2px; animation:waveAnim 0.5s ease-in-out infinite alternate; animation-delay:0s;"></div>
+          <div style="width:3px; height:18px; background:rgba(45,206,168,0.8); border-radius:2px; animation:waveAnim 0.5s ease-in-out infinite alternate; animation-delay:0.1s;"></div>
+          <div style="width:3px; height:28px; background:rgba(45,206,168,0.9); border-radius:2px; animation:waveAnim 0.5s ease-in-out infinite alternate; animation-delay:0.05s;"></div>
+          <div style="width:3px; height:22px; background:rgba(45,206,168,0.8); border-radius:2px; animation:waveAnim 0.5s ease-in-out infinite alternate; animation-delay:0.15s;"></div>
+          <div style="width:3px; height:14px; background:rgba(45,206,168,0.7); border-radius:2px; animation:waveAnim 0.5s ease-in-out infinite alternate; animation-delay:0.08s;"></div>
+        </div>
+        <!-- Listening label -->
+        <div style="position:absolute; bottom:115px; left:0; right:0; text-align:center; font-size:12px; color:var(--nr-mint); font-weight:600; letter-spacing:0.5px; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <div style="width:6px; height:6px; border-radius:50%; background:var(--nr-mint); animation:speakPulse 1s ease-in-out infinite;"></div>
+          Listening
+        </div>
+        <!-- Transcript -->
+        <div style="position:absolute; bottom:68px; left:12px; right:12px; background:rgba(5,5,8,0.8); backdrop-filter:blur(16px); border:1px solid rgba(45,206,168,0.2); border-radius:12px; padding:10px 12px;">
+          <div style="font-size:11px; color:var(--nr-mint); font-weight:600; margin-bottom:4px;">You</div>
+          <div style="font-size:12px; color:rgba(240,240,248,0.85); line-height:1.4;">Yeah, I think it's about fear of starting something I can't finish…</div>
+        </div>
+        <!-- Mini controls -->
+        <div style="position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:center; gap:12px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:16px;">🎙️</div>
+          <div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#FF3B5C,#FF6B6B); display:flex; align-items:center; justify-content:center; font-size:20px;">📵</div>
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:16px;">📷</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thinking state -->
+    <div class="mini-phone-unit">
+      <div class="mini-phone-label">Thinking State</div>
+      <div class="mini-frame">
+        <div style="position:absolute; inset:0; background:radial-gradient(ellipse 180px 260px at 50% 42%, rgba(30,20,80,0.95) 0%, var(--nr-void) 80%);"></div>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-58%); width:130px; height:130px;">
+          <div style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 38% 35%, rgba(180,165,240,0.5) 0%, rgba(50,35,110,0.7) 50%, rgba(15,10,50,0.9) 100%); box-shadow:0 0 15px rgba(123,110,255,0.2), 0 0 40px rgba(123,110,255,0.1); filter:brightness(0.6);"></div>
+          <!-- Thinking dots in center -->
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <div style="width:8px; height:8px; border-radius:50%; background:rgba(165,148,255,0.8); animation:typingBounce 1.2s infinite; animation-delay:0s;"></div>
+            <div style="width:8px; height:8px; border-radius:50%; background:rgba(165,148,255,0.8); animation:typingBounce 1.2s infinite; animation-delay:0.2s;"></div>
+            <div style="width:8px; height:8px; border-radius:50%; background:rgba(165,148,255,0.8); animation:typingBounce 1.2s infinite; animation-delay:0.4s;"></div>
+          </div>
+        </div>
+        <div style="position:absolute; bottom:115px; left:0; right:0; text-align:center; font-size:12px; color:rgba(165,148,255,0.7); font-style:italic; letter-spacing:0.3px;">Aurora is thinking…</div>
+        <div style="position:absolute; bottom:68px; left:12px; right:12px; background:rgba(5,5,8,0.75); backdrop-filter:blur(16px); border:1px solid rgba(123,110,255,0.15); border-radius:12px; padding:10px 12px;">
+          <div style="font-size:12px; color:rgba(165,148,255,0.7); line-height:1.4; font-style:italic;">Composing a thoughtful response…</div>
+        </div>
+        <div style="position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:center; gap:12px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:16px;">🎙️</div>
+          <div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#FF3B5C,#FF6B6B); display:flex; align-items:center; justify-content:center; font-size:20px;">📵</div>
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:16px;">📷</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Minimized / PiP -->
+    <div class="mini-phone-unit">
+      <div class="mini-phone-label">Minimized (PiP)</div>
+      <div class="mini-frame">
+        <div class="minimized-bg"></div>
+        <div class="minimized-content">
+          <div class="min-status-bar">
+            <span>9:41</span>
+            <span style="color:var(--nr-mint); font-size:11px; font-family:var(--f-mono);">● 12:34</span>
+          </div>
+          <div class="min-pip-call">
+            <div class="min-pip-avatar">✦</div>
+            <div class="min-pip-info">
+              <div class="min-pip-name">Aurora · Video</div>
+              <div class="min-pip-dur">12:34 · Tap to return</div>
+            </div>
+            <div class="min-pip-expand">⤢</div>
+          </div>
+          <!-- Fake app content behind -->
+          <div class="min-app-content">
+            <div class="min-fake-row" style="height:32px; border-radius:8px;"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="min-fake-row" style="height:80px; border-radius:12px;"></div>
+              <div class="min-fake-row" style="height:80px; border-radius:12px;"></div>
+            </div>
+            <div class="min-fake-row" style="height:60px; border-radius:12px;"></div>
+            <div class="min-fake-row" style="height:40px; border-radius:8px;"></div>
+            <div class="min-fake-row" style="height:40px; border-radius:8px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reaction state -->
+    <div class="mini-phone-unit">
+      <div class="mini-phone-label">Reactions</div>
+      <div class="mini-frame">
+        <div style="position:absolute; inset:0; background:radial-gradient(ellipse 200px 280px at 50% 40%, rgba(60,45,140,0.9) 0%, var(--nr-void) 75%);"></div>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-58%); width:120px; height:120px;">
+          <div style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 38% 35%, rgba(200,185,255,0.85) 0%, rgba(100,80,220,0.85) 45%, rgba(40,25,120,0.9) 100%); box-shadow:0 0 24px rgba(123,110,255,0.5), 0 0 60px rgba(123,110,255,0.25);">
+          </div>
+          <div style="position:absolute; inset:30px 18px; display:flex; justify-content:center; align-items:center; gap:18px;">
+            <div style="width:11px; height:11px; border-radius:50%; background:rgba(200,185,255,0.9); box-shadow:0 0 10px rgba(255,255,255,0.7);"></div>
+            <div style="width:11px; height:11px; border-radius:50%; background:rgba(200,185,255,0.9); box-shadow:0 0 10px rgba(255,255,255,0.7);"></div>
+          </div>
+          <div style="position:absolute; top:62%; left:50%; transform:translateX(-50%); display:flex; gap:2px; align-items:flex-end;">
+            <div style="width:3px; height:5px; background:rgba(255,255,255,0.7); border-radius:2px;"></div>
+            <div style="width:3px; height:9px; background:rgba(255,255,255,0.85); border-radius:2px;"></div>
+            <div style="width:3px; height:11px; background:rgba(255,255,255,0.9); border-radius:2px;"></div>
+            <div style="width:3px; height:9px; background:rgba(255,255,255,0.85); border-radius:2px;"></div>
+            <div style="width:3px; height:5px; background:rgba(255,255,255,0.7); border-radius:2px;"></div>
+          </div>
+        </div>
+        <!-- Floating reactions -->
+        <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+          <div style="position:absolute; font-size:22px; left:18%; bottom:160px; animation:reactionFloat 3s ease-out 0.2s infinite;">❤️</div>
+          <div style="position:absolute; font-size:26px; left:55%; bottom:160px; animation:reactionFloat 3s ease-out 0.7s infinite;">😂</div>
+          <div style="position:absolute; font-size:20px; left:72%; bottom:160px; animation:reactionFloat 3s ease-out 0s infinite;">✨</div>
+          <div style="position:absolute; font-size:24px; left:35%; bottom:160px; animation:reactionFloat 3s ease-out 1.1s infinite;">🙌</div>
+        </div>
+        <!-- Emoji picker strip -->
+        <div style="position:absolute; bottom:68px; left:10px; right:10px; background:rgba(5,5,8,0.85); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:10px; display:flex; justify-content:space-around;">
+          <span style="font-size:20px; cursor:pointer;">❤️</span>
+          <span style="font-size:20px; cursor:pointer;">😂</span>
+          <span style="font-size:20px; cursor:pointer;">😮</span>
+          <span style="font-size:20px; cursor:pointer;">✨</span>
+          <span style="font-size:20px; cursor:pointer;">🙌</span>
+          <span style="font-size:20px; cursor:pointer;">👍</span>
+        </div>
+        <div style="position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:center; gap:12px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:16px;">🎙️</div>
+          <div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#FF3B5C,#FF6B6B); display:flex; align-items:center; justify-content:center; font-size:20px;">📵</div>
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:16px;">📷</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /mini-phones-row -->
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <div>
+    <div class="footer-brand">Nearu AI · Screen 09 — Video Call</div>
+    <div class="footer-meta" style="margin-top:4px;">iOS 18 · iPhone 16 Pro · Apple Human Interface Guidelines</div>
+  </div>
+  <div class="footer-meta">Senior UI Designer<br>March 2026 · v1.1</div>
+</div>
+
+<style>
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+</style>
+
+<script>
+// =====================
+// Particle system
+// =====================
+function createParticles() {
+  const field = document.getElementById('particles');
+  if (!field) return;
+
+  function spawnParticle() {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    const startX = 30 + Math.random() * 40; // near center
+    const drift = (Math.random() - 0.5) * 80;
+    const duration = Math.random() * 3 + 3;
+    const delay = Math.random() * 2;
+
+    p.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${startX}%;
+      bottom: 35%;
+      --drift: ${drift}px;
+      animation-duration: ${duration}s;
+      animation-delay: ${delay}s;
+      opacity: 0;
+    `;
+
+    field.appendChild(p);
+    setTimeout(() => p.remove(), (duration + delay) * 1000);
+  }
+
+  setInterval(spawnParticle, 400);
+  for (let i = 0; i < 5; i++) spawnParticle();
+}
+
+createParticles();
+
+// =====================
+// Call timer
+// =====================
+let seconds = 754; // 12:34
+function updateTimer() {
+  seconds++;
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  const str = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const el = document.getElementById('call-timer');
+  const di = document.getElementById('di-dur');
+  if (el) el.textContent = str;
+  if (di) di.textContent = str;
+}
+setInterval(updateTimer, 1000);
+
+// =====================
+// Toggle Mic
+// =====================
+let micMuted = false;
+function toggleMic(el) {
+  micMuted = !micMuted;
+  const icon = document.getElementById('mic-icon');
+  const label = document.getElementById('mic-label');
+  if (micMuted) {
+    icon.textContent = '🔇';
+    icon.style.background = 'rgba(255,107,107,0.2)';
+    icon.style.borderColor = 'rgba(255,107,107,0.35)';
+    label.textContent = 'Unmute';
+    label.style.color = 'rgba(255,107,107,0.7)';
+  } else {
+    icon.textContent = '🎙️';
+    icon.style.background = '';
+    icon.style.borderColor = '';
+    label.textContent = 'Mute';
+    label.style.color = '';
+  }
+}
+
+// =====================
+// Toggle Camera
+// =====================
+let camOff = false;
+function toggleCam(el) {
+  camOff = !camOff;
+  const icon = document.getElementById('cam-icon');
+  const label = document.getElementById('cam-label');
+  const pip = document.getElementById('user-pip');
+  if (camOff) {
+    icon.textContent = '📵';
+    icon.style.background = 'rgba(255,107,107,0.2)';
+    icon.style.borderColor = 'rgba(255,107,107,0.35)';
+    label.textContent = 'Camera off';
+    label.style.color = 'rgba(255,107,107,0.7)';
+    pip.style.filter = 'blur(4px) brightness(0.4)';
+  } else {
+    icon.textContent = '📷';
+    icon.style.background = '';
+    icon.style.borderColor = '';
+    label.textContent = 'Camera';
+    label.style.color = '';
+    pip.style.filter = '';
+  }
+}
+
+// =====================
+// End call animation
+// =====================
+function endCall() {
+  const frame = document.querySelector('.phone-frame');
+  if (!frame) return;
+  frame.style.transition = 'all 0.3s ease';
+  frame.style.transform = 'scale(0.97)';
+  frame.style.boxShadow = '0 0 0 6px #08080F, 0 0 0 7.5px rgba(255,59,92,0.3), 0 60px 120px rgba(0,0,0,0.85)';
+  setTimeout(() => {
+    frame.style.transform = '';
+    frame.style.boxShadow = '';
+  }, 350);
+}
+
+// =====================
+// Reactions
+// =====================
+const reactionEmojis = ['❤️','😂','✨','🙌','😮','👍','🔥','💙'];
+let reactionCount = 0;
+function sendReaction() {
+  const layer = document.getElementById('reaction-layer');
+  if (!layer) return;
+  const emoji = document.createElement('div');
+  emoji.className = 'reaction-emoji';
+  emoji.textContent = reactionEmojis[reactionCount % reactionEmojis.length];
+  emoji.style.left = (15 + Math.random() * 65) + '%';
+  emoji.style.bottom = '160px';
+  emoji.style.animationDelay = '0s';
+  reactionCount++;
+  layer.appendChild(emoji);
+  setTimeout(() => emoji.remove(), 3500);
+}
+
+// =====================
+// PiP drag to reposition
+// =====================
+const pip = document.getElementById('user-pip');
+if (pip) {
+  let isDragging = false;
+  let startX, startY, initRight, initTop;
+
+  pip.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = pip.getBoundingClientRect();
+    const frameRect = pip.closest('.phone-frame').getBoundingClientRect();
+    initRight = frameRect.right - rect.right;
+    initTop = rect.top - frameRect.top;
+    pip.style.transition = 'none';
+    pip.style.cursor = 'grabbing';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    pip.style.right = (initRight - dx) + 'px';
+    pip.style.top = (initTop + dy) + 'px';
+    pip.style.left = 'auto';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    pip.style.cursor = 'pointer';
+    pip.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+  });
+
+  // Touch support
+  pip.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    isDragging = true;
+    startX = t.clientX; startY = t.clientY;
+    const rect = pip.getBoundingClientRect();
+    const frameRect = pip.closest('.phone-frame').getBoundingClientRect();
+    initRight = frameRect.right - rect.right;
+    initTop = rect.top - frameRect.top;
+    pip.style.transition = 'none';
+  }, {passive: true});
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const t = e.touches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    pip.style.right = (initRight - dx) + 'px';
+    pip.style.top = (initTop + dy) + 'px';
+    pip.style.left = 'auto';
+  }, {passive: true});
+
+  document.addEventListener('touchend', () => { isDragging = false; });
+}
+
+// =====================
+// Alternate speaking / listening states on the avatar
+// =====================
+const mouthBars = document.querySelectorAll('.mouth-bar');
+const eyeHighlight = document.querySelector('.ai-head-core');
+const waveform = document.querySelector('.voice-wave');
+
+let isAuroraSpeaking = true;
+
+function setListeningState() {
+  isAuroraSpeaking = false;
+  mouthBars.forEach(b => {
+    b.style.animationPlayState = 'paused';
+    b.style.opacity = '0.15';
+    b.style.transform = 'scaleY(0.2)';
+  });
+  if (waveform) {
+    waveform.querySelectorAll('.vw-bar').forEach(b => {
+      b.style.background = 'rgba(45,206,168,0.7)';
+      b.style.boxShadow = '0 0 8px rgba(45,206,168,0.5)';
+    });
+  }
+}
+
+function setSpeakingState() {
+  isAuroraSpeaking = true;
+  mouthBars.forEach(b => {
+    b.style.animationPlayState = 'running';
+    b.style.opacity = '';
+    b.style.transform = '';
+  });
+  if (waveform) {
+    waveform.querySelectorAll('.vw-bar').forEach(b => {
+      b.style.background = 'rgba(165,148,255,0.7)';
+      b.style.boxShadow = '0 0 8px rgba(165,148,255,0.5)';
+    });
+  }
+}
+
+// Auto-toggle between speaking and listening to demo the states
+let stateTimer = 0;
+const stateDurations = [6000, 4000, 7000, 3000, 8000, 5000];
+let stateIndex = 0;
+
+function cycleState() {
+  if (isAuroraSpeaking) {
+    setListeningState();
+  } else {
+    setSpeakingState();
+  }
+  stateIndex = (stateIndex + 1) % stateDurations.length;
+  setTimeout(cycleState, stateDurations[stateIndex]);
+}
+
+setTimeout(cycleState, stateDurations[0]);
+</script>
+</body>
+</html>

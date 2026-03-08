@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEARU — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   NEARU DESIGN SYSTEM — CSS VARIABLES
+   ============================================================ */
+:root {
+  /* BRAND PRIMARY */
+  --blue:           #3B9EFF;
+  --blue-bright:    #58B4FF;
+  --blue-vivid:     #72C5FF;
+  --blue-dim:       rgba(59,158,255,0.12);
+  --blue-border:    rgba(59,158,255,0.25);
+  --blue-glow:      rgba(59,158,255,0.06);
+  --blue-deep:      #1A6FBF;
+  --blue-tint:      rgba(59,158,255,0.08);
+
+  /* ACCENT */
+  --cyan:           #00D4FF;
+  --cyan-dim:       rgba(0,212,255,0.10);
+  --cyan-border:    rgba(0,212,255,0.20);
+  --violet:         #7B5BFF;
+  --violet-dim:     rgba(123,91,255,0.12);
+  --violet-border:  rgba(123,91,255,0.25);
+
+  /* SEMANTIC */
+  --green:          #3FB950;
+  --green-dim:      rgba(63,185,80,0.12);
+  --amber:          #D29922;
+  --amber-dim:      rgba(210,153,34,0.12);
+  --red:            #F85149;
+  --red-dim:        rgba(248,81,73,0.12);
+
+  /* BACKGROUNDS */
+  --bg:             #070B12;
+  --bg-panel:       #0D1420;
+  --bg-card:        #111827;
+  --bg-card-hover:  #161F30;
+  --bg-input:       #1A2438;
+  --bg-overlay:     rgba(7,11,18,0.85);
+
+  /* BORDERS */
+  --border:         rgba(255,255,255,0.07);
+  --border-md:      rgba(255,255,255,0.11);
+  --border-strong:  rgba(255,255,255,0.18);
+
+  /* TEXT */
+  --text:           #E6EDF3;
+  --text-secondary: #A0AEC0;
+  --text-muted:     #7D8590;
+  --text-dim:       #4A5568;
+  --text-inverse:   #0D1420;
+
+  /* RADIUS */
+  --r-xs:  4px;
+  --r-sm:  6px;
+  --r:     10px;
+  --r-md:  12px;
+  --r-lg:  16px;
+  --r-xl:  20px;
+  --r-2xl: 28px;
+  --r-full: 9999px;
+
+  /* SPACING SCALE */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* SHADOWS */
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+  --shadow-lg:    0 10px 40px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-blue:  0 0 24px rgba(59,158,255,0.25), 0 4px 16px rgba(59,158,255,0.12);
+  --shadow-card:  0 0 0 1px var(--border), 0 4px 20px rgba(0,0,0,0.5);
+
+  /* TYPOGRAPHY */
+  --font-display: 'Rajdhani', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+
+  /* GRADIENTS */
+  --grad-blue:    linear-gradient(135deg, #3B9EFF 0%, #58B4FF 50%, #00D4FF 100%);
+  --grad-blue-v:  linear-gradient(180deg, #3B9EFF 0%, #1A6FBF 100%);
+  --grad-blue-h:  linear-gradient(90deg, #1A6FBF 0%, #3B9EFF 50%, #00D4FF 100%);
+  --grad-violet:  linear-gradient(135deg, #7B5BFF 0%, #3B9EFF 100%);
+  --grad-dark:    linear-gradient(135deg, #0D1420 0%, #111827 100%);
+  --grad-glow:    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,158,255,0.08), transparent 70%);
+  --grad-panel:   linear-gradient(180deg, #0D1420 0%, #070B12 100%);
+}
+
+/* ============================================================
+   BASE RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 5px; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 32px 80px; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  margin-top: 64px;
+}
+.section-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+.section-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border-md) 0%, transparent 100%);
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+
+/* ============================================================
+   CARD BASE
+   ============================================================ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, background 0.2s;
+}
+.card:hover { border-color: var(--border-md); background: var(--bg-card-hover); }
+.card-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.hero {
+  position: relative;
+  padding: 80px 0 64px;
+  text-align: center;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(59,158,255,0.1), transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--blue-dim);
+  border: 1px solid var(--blue-border);
+  border-radius: var(--r-full);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 32px;
+}
+.hero-eyebrow-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* LOGO */
+.logo-lockup {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.logo-icon {
+  width: 52px;
+  height: 52px;
+  position: relative;
+  flex-shrink: 0;
+}
+.logo-icon svg { width: 100%; height: 100%; }
+.logo-wordmark {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  background: var(--grad-blue-h);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-tagline {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.hero-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   COLOR PALETTE
+   ============================================================ */
+.color-hero-card {
+  border-radius: var(--r-lg);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 160px;
+  position: relative;
+  overflow: hidden;
+}
+.color-hero-card.blue { background: var(--blue); }
+.color-hero-card.blue-bright { background: var(--blue-bright); }
+.color-hero-card.cyan { background: var(--cyan); }
+.color-hero-name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  letter-spacing: 0.04em;
+}
+.color-hero-role {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+.color-hero-usage {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  margin-top: auto;
+}
+.color-hero-hex {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+}
+
+.color-swatch-row {
+  display: flex;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  height: 56px;
+  margin-bottom: 8px;
+}
+.color-swatch-row.sm { height: 40px; }
+.swatch { flex: 1; }
+
+.swatch-grid { display: flex; flex-direction: column; gap: 8px; }
+.swatch-item { display: flex; align-items: center; gap: 12px; }
+.swatch-chip {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.swatch-info { flex: 1; min-width: 0; }
+.swatch-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.swatch-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+}
+.swatch-usage {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+/* Swatch rows for scale */
+.scale-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.scale-chip {
+  flex: 1;
+  min-width: 48px;
+  height: 48px;
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: flex-end;
+  padding: 5px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.type-specimen {
+  padding: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+.type-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 20px;
+}
+.type-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+.type-meta-row {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.type-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.type-meta-key {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.type-meta-val {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.t-display-xl { font-family: var(--font-display); font-size: 72px; font-weight: 700; line-height: 1.0; letter-spacing: 0.06em; color: var(--text); }
+.t-display-lg { font-family: var(--font-display); font-size: 56px; font-weight: 700; line-height: 1.05; letter-spacing: 0.04em; color: var(--text); }
+.t-display-md { font-family: var(--font-display); font-size: 40px; font-weight: 600; line-height: 1.1; letter-spacing: 0.03em; color: var(--text); }
+.t-display-sm { font-family: var(--font-display); font-size: 28px; font-weight: 600; line-height: 1.2; letter-spacing: 0.02em; color: var(--text); }
+.t-heading-xl { font-size: 24px; font-weight: 600; line-height: 1.3; color: var(--text); }
+.t-heading-lg { font-size: 20px; font-weight: 600; line-height: 1.35; color: var(--text); }
+.t-heading-md { font-size: 16px; font-weight: 600; line-height: 1.4; color: var(--text); }
+.t-body-lg { font-size: 16px; font-weight: 400; line-height: 1.65; color: var(--text-secondary); }
+.t-body { font-size: 14px; font-weight: 400; line-height: 1.6; color: var(--text-secondary); }
+.t-body-sm { font-size: 12px; font-weight: 400; line-height: 1.55; color: var(--text-muted); }
+.t-caption { font-size: 11px; font-weight: 500; line-height: 1.5; color: var(--text-dim); letter-spacing: 0.01em; }
+.t-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+.t-code { font-family: 'Courier New', monospace; font-size: 12px; color: var(--blue-bright); }
+
+/* ============================================================
+   GRADIENTS & EFFECTS
+   ============================================================ */
+.grad-card {
+  border-radius: var(--r-md);
+  height: 72px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.grad-blue { background: var(--grad-blue-h); }
+.grad-blue-v { background: var(--grad-blue-v); }
+.grad-violet { background: var(--grad-violet); }
+.grad-dark { background: var(--grad-dark); border: 1px solid var(--border-md); color: var(--text-secondary); }
+.grad-glow-card { background: var(--grad-glow), var(--bg-card); border: 1px solid var(--border); }
+
+.glass-card {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(59,158,255,0.05) 0%, transparent 50%, rgba(123,91,255,0.04) 100%);
+  pointer-events: none;
+}
+.glass-card-inner { position: relative; }
+
+/* ============================================================
+   UI COMPONENTS
+   ============================================================ */
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--r-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--blue);
+  color: var(--bg);
+  box-shadow: 0 0 16px rgba(59,158,255,0.3), 0 2px 8px rgba(0,0,0,0.3);
+}
+.btn-primary:hover {
+  background: var(--blue-bright);
+  box-shadow: 0 0 24px rgba(59,158,255,0.5), 0 4px 12px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border-md);
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--border-strong);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--blue);
+  border: 1px solid var(--blue-border);
+}
+.btn-ghost:hover {
+  background: var(--blue-dim);
+  border-color: var(--blue);
+}
+.btn-danger {
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid rgba(248,81,73,0.25);
+}
+.btn-danger:hover {
+  background: rgba(248,81,73,0.2);
+}
+.btn-success {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(63,185,80,0.25);
+}
+.btn-cyan {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  border: 1px solid var(--cyan-border);
+}
+.btn-cyan:hover { background: rgba(0,212,255,0.18); }
+.btn-violet {
+  background: var(--violet-dim);
+  color: var(--violet);
+  border: 1px solid var(--violet-border);
+}
+.btn-lg { padding: 14px 28px; font-size: 16px; border-radius: var(--r-lg); }
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: var(--r-sm); }
+.btn-xs { padding: 4px 10px; font-size: 11px; border-radius: var(--r-xs); }
+.btn-pill { border-radius: var(--r-full); }
+.btn-icon { padding: 10px; border-radius: var(--r-md); }
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 500;
+}
+.badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.badge-active { background: var(--green-dim); color: var(--green); border: 1px solid rgba(63,185,80,0.2); }
+.badge-active .badge-dot { background: var(--green); animation: pulse 2s infinite; }
+.badge-processing { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-border); }
+.badge-processing .badge-dot { background: var(--blue); animation: pulse 1.5s infinite; }
+.badge-draft { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(210,153,34,0.2); }
+.badge-draft .badge-dot { background: var(--amber); }
+.badge-error { background: var(--red-dim); color: var(--red); border: 1px solid rgba(248,81,73,0.2); }
+.badge-error .badge-dot { background: var(--red); }
+.badge-neutral { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); }
+.badge-neutral .badge-dot { background: var(--text-muted); }
+.badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid var(--cyan-border); }
+.badge-cyan .badge-dot { background: var(--cyan); animation: pulse 2s infinite; }
+.badge-violet { background: var(--violet-dim); color: var(--violet); border: 1px solid var(--violet-border); }
+.badge-violet .badge-dot { background: var(--violet); }
+
+/* Tags */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--r-xs);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.tag-blue { background: var(--blue-dim); color: var(--blue); }
+.tag-green { background: var(--green-dim); color: var(--green); }
+.tag-amber { background: var(--amber-dim); color: var(--amber); }
+.tag-red { background: var(--red-dim); color: var(--red); }
+
+/* Input / Form */
+.input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.input-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+.input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+.input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-dim);
+}
+.input::placeholder { color: var(--text-dim); }
+.input-hint { font-size: 11px; color: var(--text-muted); }
+.input-error { border-color: var(--red) !important; }
+.input-error-msg { font-size: 11px; color: var(--red); margin-top: 4px; }
+
+/* Record Button */
+.record-btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.record-btn {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 32px rgba(59,158,255,0.4), 0 8px 24px rgba(0,0,0,0.4);
+  transition: all 0.2s;
+}
+.record-btn::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(59,158,255,0.3);
+  animation: record-ring 2s ease-in-out infinite;
+}
+.record-btn::after {
+  content: '';
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 1px solid rgba(59,158,255,0.15);
+  animation: record-ring 2s ease-in-out infinite 0.4s;
+}
+@keyframes record-ring {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.05); }
+}
+.record-btn:hover {
+  background: var(--blue-bright);
+  transform: scale(1.05);
+  box-shadow: 0 0 48px rgba(59,158,255,0.6), 0 12px 32px rgba(0,0,0,0.4);
+}
+.record-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 1;
+}
+
+/* Waveform */
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 36px;
+}
+.wave-bar {
+  width: 3px;
+  background: var(--blue);
+  border-radius: 3px;
+  opacity: 0.8;
+}
+.wave-bar.active { animation: wave 0.8s ease-in-out infinite; }
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.25); opacity: 0.35; }
+  50% { transform: scaleY(1); opacity: 0.9; }
+}
+.wb1 { height: 8px; animation-delay: 0s; }
+.wb2 { height: 18px; animation-delay: 0.1s; }
+.wb3 { height: 28px; animation-delay: 0.2s; }
+.wb4 { height: 22px; animation-delay: 0.05s; }
+.wb5 { height: 32px; animation-delay: 0.15s; }
+.wb6 { height: 18px; animation-delay: 0.25s; }
+.wb7 { height: 24px; animation-delay: 0.08s; }
+.wb8 { height: 12px; animation-delay: 0.18s; }
+.wb9 { height: 20px; animation-delay: 0.28s; }
+.wb10 { height: 14px; animation-delay: 0.12s; }
+.wb11 { height: 26px; animation-delay: 0.22s; }
+.wb12 { height: 10px; animation-delay: 0.32s; }
+/* inactive bars */
+.wb13 { height: 6px; opacity: 0.2; }
+.wb14 { height: 10px; opacity: 0.2; }
+.wb15 { height: 7px; opacity: 0.2; }
+.wb16 { height: 4px; opacity: 0.2; }
+.wb17 { height: 8px; opacity: 0.2; }
+
+/* Emotion Pill */
+.emotion-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--blue-dim);
+  border: 1px solid var(--blue-border);
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 500;
+}
+.emotion-icon { font-size: 16px; }
+.emotion-label { color: var(--blue); }
+.emotion-score { color: var(--text-muted); font-size: 12px; }
+
+/* Avatar / Orb */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--blue-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--blue-dim);
+  color: var(--blue);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.avatar-lg { width: 56px; height: 56px; font-size: 18px; }
+.avatar-sm { width: 28px; height: 28px; font-size: 11px; border-width: 1px; }
+.avatar-online::after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--green);
+  border: 2px solid var(--bg-card);
+}
+
+/* Soul / Orb visualizer */
+.soul-orb {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--blue-bright), var(--blue-deep));
+  box-shadow: 0 0 40px rgba(59,158,255,0.5), 0 0 80px rgba(59,158,255,0.2), inset 0 0 20px rgba(255,255,255,0.1);
+  animation: orb-breathe 3s ease-in-out infinite;
+  position: relative;
+}
+@keyframes orb-breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(59,158,255,0.5), 0 0 80px rgba(59,158,255,0.2); }
+  50% { transform: scale(1.06); box-shadow: 0 0 60px rgba(59,158,255,0.7), 0 0 100px rgba(59,158,255,0.3); }
+}
+.soul-orb::before {
+  content: '';
+  position: absolute;
+  width: 40%;
+  height: 25%;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  top: 18%;
+  left: 18%;
+  filter: blur(4px);
+}
+
+/* Tab bar */
+.tab-bar {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 6px;
+  gap: 2px;
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 20px;
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex: 1;
+  min-width: 60px;
+}
+.tab-item.active { background: var(--blue-dim); }
+.tab-item .tab-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+.tab-item.active .tab-icon { color: var(--blue); }
+.tab-item .tab-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+.tab-item.active .tab-label { color: var(--blue); }
+
+/* Project Card */
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.15s;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.project-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--blue-border);
+  box-shadow: 0 0 20px rgba(59,158,255,0.08);
+}
+.project-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  background: var(--blue-dim);
+  border: 1px solid var(--blue-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.project-info { flex: 1; min-width: 0; }
+.project-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.project-meta { font-size: 12px; color: var(--text-muted); }
+.project-time { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+
+/* Elevation */
+.elevation-card {
+  width: 100%;
+  height: 80px;
+  border-radius: var(--r-md);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.elev-soft  { box-shadow: var(--shadow-sm); }
+.elev-med   { box-shadow: var(--shadow-md); }
+.elev-blue  { box-shadow: var(--shadow-blue); border: 1px solid var(--blue-border); }
+.elev-card  { box-shadow: var(--shadow-card); }
+
+/* Timeline clip */
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  margin-bottom: 6px;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.timeline-item.completed { opacity: 0.5; text-decoration: line-through; }
+.timeline-item.selected { background: var(--blue-dim); border: 1px solid var(--blue-border); }
+.timeline-item.default { background: var(--bg-input); border: 1px solid var(--border); }
+.timeline-item.default:hover { border-color: var(--border-md); background: var(--bg-card-hover); }
+.timeline-check {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-xs);
+  border: 1.5px solid var(--border-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.timeline-check.done { background: var(--blue); border-color: var(--blue); color: white; }
+.timeline-check.add { background: transparent; color: var(--text-dim); }
+.timeline-check.ex { background: transparent; color: var(--text-dim); }
+.timeline-text { flex: 1; font-size: 13px; color: var(--text-secondary); }
+.timeline-play {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* Tooltip */
+.tooltip-wrap { position: relative; display: inline-block; }
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  white-space: nowrap;
+  color: var(--text);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+}
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--border-md);
+}
+
+/* ============================================================
+   ICON GRID
+   ============================================================ */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+}
+.icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-radius: var(--r-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.icon-item:hover { border-color: var(--blue-border); background: var(--blue-tint); }
+.icon-glyph { font-size: 20px; color: var(--text-secondary); }
+.icon-item:hover .icon-glyph { color: var(--blue); }
+.icon-name { font-size: 9px; color: var(--text-dim); text-align: center; letter-spacing: 0.03em; }
+
+/* ============================================================
+   SPACING SCALE
+   ============================================================ */
+.spacing-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.spacing-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.spacing-block { background: var(--blue); border-radius: 2px; width: 16px; opacity: 0.8; }
+.spacing-label { font-size: 10px; color: var(--text-dim); text-align: center; }
+.spacing-value { font-size: 9px; color: var(--text-muted); font-family: 'Courier New', monospace; }
+
+/* ============================================================
+   RADIUS DISPLAY
+   ============================================================ */
+.radius-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+}
+.radius-item {
+  background: var(--blue-tint);
+  border: 1.5px solid var(--blue-border);
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.radius-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.radius-val { font-size: 10px; color: var(--blue); font-family: 'Courier New', monospace; }
+
+/* ============================================================
+   MOTION
+   ============================================================ */
+.motion-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 8px;
+}
+.motion-name { font-size: 13px; font-weight: 500; color: var(--text); width: 140px; flex-shrink: 0; }
+.motion-timing { font-size: 12px; color: var(--text-muted); flex: 1; font-family: 'Courier New', monospace; }
+.motion-bar {
+  height: 4px;
+  width: 120px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.motion-fill {
+  height: 100%;
+  background: var(--blue);
+  border-radius: 4px;
+  transform-origin: left;
+  animation: motion-demo 3s ease infinite;
+}
+.motion-easeOut .motion-fill { animation-timing-function: ease-out; }
+.motion-easeIn  .motion-fill { animation-timing-function: ease-in; }
+.motion-spring  .motion-fill { animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+@keyframes motion-demo {
+  0%, 100% { transform: scaleX(0); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: scaleX(1); opacity: 1; }
+  90% { opacity: 1; }
+}
+
+/* ============================================================
+   MISC UTILITIES
+   ============================================================ */
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-4 { gap: 4px; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.text-blue { color: var(--blue); }
+.text-muted { color: var(--text-muted); }
+.text-secondary { color: var(--text-secondary); }
+.font-display { font-family: var(--font-display); }
+.mono { font-family: 'Courier New', monospace; }
+
+/* ============================================================
+   HEADER NAV
+   ============================================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(7,11,18,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  background: var(--grad-blue);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header-nav { display: flex; align-items: center; gap: 6px; }
+.header-nav-item {
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.header-nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.header-nav-item.active { color: var(--blue); background: var(--blue-dim); }
+.header-badge {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  background: var(--blue-dim);
+  color: var(--blue);
+  border: 1px solid var(--blue-border);
+  border-radius: var(--r-full);
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-logo">NEARU</div>
+  <nav class="header-nav">
+    <a href="#colors" class="header-nav-item active">Colors</a>
+    <a href="#typography" class="header-nav-item">Typography</a>
+    <a href="#components" class="header-nav-item">Components</a>
+    <a href="#patterns" class="header-nav-item">Patterns</a>
+    <a href="#motion" class="header-nav-item">Motion</a>
+  </nav>
+  <span class="header-badge">v1.0</span>
+</header>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      NEARU Design System
+    </div>
+    <div class="logo-lockup">
+      <div class="logo-mark">
+        <!-- Nearu orbital icon SVG -->
+        <div class="logo-icon">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="1.8" opacity="0.5"/>
+            <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="1.8" transform="rotate(60 26 26)" opacity="0.5"/>
+            <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="1.8" transform="rotate(120 26 26)" opacity="0.5"/>
+            <circle cx="26" cy="26" r="4" fill="#58B4FF"/>
+            <circle cx="48" cy="26" r="2.5" fill="#00D4FF"/>
+            <circle cx="26" cy="4" r="1.5" fill="#3B9EFF" opacity="0.7"/>
+          </svg>
+        </div>
+        <div class="logo-wordmark">NEARU</div>
+      </div>
+      <div class="logo-tagline">We Build Souls for Machines</div>
+    </div>
+    <p class="hero-desc">A complete visual language for NEARU's emotional AI platform — colors, typography, components, and interaction patterns.</p>
+  </section>
+
+  <!-- ========================================================
+       LOGO USAGE
+       ======================================================== -->
+  <div class="section-header" id="logo">
+    <span class="section-label">Logo & Identity</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="grid-3 mb-24">
+    <!-- Dark background -->
+    <div class="card" style="background: var(--bg); border-color: var(--border-md); padding: 40px; display:flex; flex-direction:column; align-items:center; gap:16px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:32px; height:32px;">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="1.8" opacity="0.5"/>
+            <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="1.8" transform="rotate(60 26 26)" opacity="0.5"/>
+            <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="1.8" transform="rotate(120 26 26)" opacity="0.5"/>
+            <circle cx="26" cy="26" r="4" fill="#58B4FF"/>
+            <circle cx="48" cy="26" r="2.5" fill="#00D4FF"/>
+          </svg>
+        </div>
+        <span style="font-family:var(--font-display); font-size:32px; font-weight:700; letter-spacing:0.1em; background:var(--grad-blue-h); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">NEARU</span>
+      </div>
+      <span class="t-caption">Full lockup — dark bg ✓</span>
+    </div>
+    <!-- Panel bg -->
+    <div class="card" style="background: var(--bg-panel); padding: 40px; display:flex; flex-direction:column; align-items:center; gap:16px;">
+      <span style="font-family:var(--font-display); font-size:32px; font-weight:700; letter-spacing:0.1em; background:var(--grad-blue-h); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">NEARU</span>
+      <span class="t-caption">Wordmark only — panel bg ✓</span>
+    </div>
+    <!-- Icon only -->
+    <div class="card" style="padding: 40px; display:flex; flex-direction:column; align-items:center; gap:16px;">
+      <div style="width:56px; height:56px;">
+        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+          <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="2" opacity="0.6"/>
+          <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="2" transform="rotate(60 26 26)" opacity="0.6"/>
+          <ellipse cx="26" cy="26" rx="22" ry="10" stroke="#3B9EFF" stroke-width="2" transform="rotate(120 26 26)" opacity="0.6"/>
+          <circle cx="26" cy="26" r="5" fill="#3B9EFF"/>
+          <circle cx="26" cy="26" r="2.5" fill="#72C5FF"/>
+          <circle cx="48" cy="26" r="3" fill="#00D4FF"/>
+        </svg>
+      </div>
+      <span class="t-caption">Icon mark — app icon / favicon ✓</span>
+    </div>
+  </div>
+
+  <!-- Don't use -->
+  <div class="card mb-24" style="border-color: rgba(248,81,73,0.15); background: var(--red-dim);">
+    <div class="card-label" style="color: var(--red);">⚠ Logo Don'ts</div>
+    <div style="display:flex; gap:32px; flex-wrap:wrap; align-items:center; font-size:13px; color:var(--text-muted);">
+      <span>❌ Stretch or distort the wordmark</span>
+      <span>❌ Use on light/white backgrounds without adaptation</span>
+      <span>❌ Change the blue gradient to any other color</span>
+      <span>❌ Add drop shadows or effects</span>
+      <span>❌ Use lowercase lettering</span>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       COLOR PALETTE
+       ======================================================== -->
+  <div class="section-header" id="colors">
+    <span class="section-label">Color Palette</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <!-- Primary colors -->
+  <div class="grid-3 mb-16">
+    <div>
+      <div class="color-hero-card blue mb-12">
+        <div class="color-hero-name">Blue</div>
+        <div class="color-hero-role">Primary — CTAs, active states, brand accent</div>
+        <div class="color-hero-hex">#3B9EFF · hsl(210, 100%, 62%)</div>
+      </div>
+      <p class="t-body-sm">CTAs, FAB, focus rings, data highlights, primary interactions.</p>
+    </div>
+    <div>
+      <div class="color-hero-card blue-bright mb-12">
+        <div class="color-hero-name">Blue Bright</div>
+        <div class="color-hero-role">Hover states, elevated emphasis</div>
+        <div class="color-hero-hex">#58B4FF · hsl(210, 100%, 67%)</div>
+      </div>
+      <p class="t-body-sm">Hover states, text highlights, waveform visualization.</p>
+    </div>
+    <div>
+      <div class="color-hero-card cyan mb-12">
+        <div class="color-hero-name">Cyan</div>
+        <div class="color-hero-role">Accent — NearuVibe™, special states</div>
+        <div class="color-hero-hex">#00D4FF · hsl(191, 100%, 50%)</div>
+      </div>
+      <p class="t-body-sm">Emotion data, NearuVibe™ indicators, secondary accents.</p>
+    </div>
+  </div>
+
+  <!-- Blue scale -->
+  <div class="grid-2 mb-16">
+    <div class="card">
+      <div class="card-label">Blue — Primary Scale</div>
+      <div class="scale-row mb-8">
+        <div class="scale-chip" style="background: hsl(210,100%,96%); height:48px;"><span style="color:#3B9EFF; font-size:9px;">Tint</span></div>
+        <div class="scale-chip" style="background: hsl(210,100%,90%);"><span style="color:#3B9EFF;">92%</span></div>
+        <div class="scale-chip" style="background: hsl(210,100%,80%);"><span>80%</span></div>
+        <div class="scale-chip" style="background: hsl(210,100%,70%);"><span>70%</span></div>
+        <div class="scale-chip" style="background: #3B9EFF;"><span style="color:rgba(0,0,0,0.6);">Base</span></div>
+        <div class="scale-chip" style="background: #1A6FBF;"><span>Deep</span></div>
+        <div class="scale-chip" style="background: #0D3F6E;"><span>Abyss</span></div>
+      </div>
+      <div style="display:flex; gap:8px; font-size:11px; color:var(--text-dim); flex-wrap:wrap;">
+        <span>Tint L:96%</span><span>Light L:90%</span><span>Mid L:80%</span><span>Bright L:70%</span>
+        <span>Base L:62%</span><span>Deep L:40%</span><span>Abyss L:22%</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Neutrals — Background / Text</div>
+      <div class="scale-row mb-8">
+        <div class="scale-chip" style="background:#E6EDF3; border:1px solid rgba(0,0,0,0.1);"><span style="color:#0D1420;">Text</span></div>
+        <div class="scale-chip" style="background:#A0AEC0;"><span style="color:#0D1420;">Sec</span></div>
+        <div class="scale-chip" style="background:#7D8590;"><span>Mut</span></div>
+        <div class="scale-chip" style="background:#4A5568;"><span>Dim</span></div>
+        <div class="scale-chip" style="background:#1A2438;"><span>Input</span></div>
+        <div class="scale-chip" style="background:#111827;"><span>Card</span></div>
+        <div class="scale-chip" style="background:#0D1420;"><span>Panel</span></div>
+        <div class="scale-chip" style="background:#070B12;"><span>BG</span></div>
+      </div>
+      <div style="display:flex; gap:8px; font-size:11px; color:var(--text-dim); flex-wrap:wrap;">
+        <span>Text #E6EDF3</span><span>Secondary #A0AEC0</span><span>Muted #7D8590</span>
+        <span>Input #1A2438</span><span>Card #111827</span><span>BG #070B12</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Semantic + Accent -->
+  <div class="grid-2 mb-24">
+    <div class="card">
+      <div class="card-label">Semantic Colors</div>
+      <div class="swatch-grid">
+        <div class="swatch-item">
+          <div class="swatch-chip" style="background:var(--green);"></div>
+          <div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-meta">#3FB950 · hsl(133, 48%, 49%)</div></div>
+          <div class="swatch-usage text-muted">Connected, active, exported</div>
+        </div>
+        <div class="swatch-item">
+          <div class="swatch-chip" style="background:var(--amber);"></div>
+          <div class="swatch-info"><div class="swatch-name">Warning</div><div class="swatch-meta">#D29922 · hsl(40, 64%, 48%)</div></div>
+          <div class="swatch-usage text-muted">Draft, caution, degraded</div>
+        </div>
+        <div class="swatch-item">
+          <div class="swatch-chip" style="background:var(--red);"></div>
+          <div class="swatch-info"><div class="swatch-name">Destructive</div><div class="swatch-meta">#F85149 · hsl(1, 92%, 63%)</div></div>
+          <div class="swatch-usage text-muted">Error, delete, offline</div>
+        </div>
+        <div class="swatch-item">
+          <div class="swatch-chip" style="background:var(--violet);"></div>
+          <div class="swatch-info"><div class="swatch-name">Violet</div><div class="swatch-meta">#7B5BFF · hsl(249, 100%, 68%)</div></div>
+          <div class="swatch-usage text-muted">Processing, AI inference</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Border / Surface Tokens</div>
+      <div class="swatch-grid">
+        <div class="swatch-item">
+          <div class="swatch-chip" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15);"></div>
+          <div class="swatch-info"><div class="swatch-name">Border Subtle</div><div class="swatch-meta">rgba(255,255,255, 0.07)</div></div>
+          <div class="swatch-usage text-muted">Card borders, dividers</div>
+        </div>
+        <div class="swatch-item">
+          <div class="swatch-chip" style="background:rgba(255,255,255,0.11); border:1px solid rgba(255,255,255,0.2);"></div>
+          <div class="swatch-info"><div class="swatch-name">Border Medium</div><div class="swatch-meta">rgba(255,255,255, 0.11)</div></div>
+          <div class="swatch-usage text-muted">Inputs, hover states</div>
+        </div>
+        <div class="swatch-item">
+          <div class="swatch-chip" style="background:rgba(59,158,255,0.25); border:1px solid rgba(59,158,255,0.5);"></div>
+          <div class="swatch-info"><div class="swatch-name">Blue Border</div><div class="swatch-meta">rgba(59,158,255, 0.25)</div></div>
+          <div class="swatch-usage text-muted">Focus, active, selected</div>
+        </div>
+        <div class="swatch-item">
+          <div class="swatch-chip" style="background:rgba(59,158,255,0.12);"></div>
+          <div class="swatch-info"><div class="swatch-name">Blue Surface</div><div class="swatch-meta">rgba(59,158,255, 0.12)</div></div>
+          <div class="swatch-usage text-muted">Selected bg, hover fills</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       TYPOGRAPHY
+       ======================================================== -->
+  <div class="section-header" id="typography">
+    <span class="section-label">Typography</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="grid-2 mb-16">
+    <div class="type-specimen">
+      <div class="type-label">Display — Rajdhani</div>
+      <div style="font-family:var(--font-display); font-size:52px; font-weight:700; line-height:1.0; letter-spacing:0.06em; color:var(--text); margin-bottom:16px;">
+        We Build<br>Souls.
+      </div>
+      <div style="font-family:var(--font-display); font-size:28px; font-weight:500; letter-spacing:0.04em; color:var(--text-secondary); margin-bottom:16px;">
+        Emotional Intelligence
+      </div>
+      <div class="type-divider"></div>
+      <div class="type-meta-row">
+        <div class="type-meta"><div class="type-meta-key">Family</div><div class="type-meta-val">Rajdhani</div></div>
+        <div class="type-meta"><div class="type-meta-key">Weights</div><div class="type-meta-val">300 · 400 · 500 · 600 · 700</div></div>
+        <div class="type-meta"><div class="type-meta-key">Tracking</div><div class="type-meta-val">+0.04em to +0.18em</div></div>
+        <div class="type-meta"><div class="type-meta-key">Style</div><div class="type-meta-val">Geometric Sans-Serif</div></div>
+        <div class="type-meta"><div class="type-meta-key">Use</div><div class="type-meta-val">Headings, labels, UI chrome</div></div>
+      </div>
+    </div>
+    <div class="type-specimen">
+      <div class="type-label">Body — DM Sans</div>
+      <div style="font-size:20px; font-weight:500; line-height:1.45; color:var(--text); margin-bottom:12px;">
+        Emotional intelligence infrastructure for the era of embodied AI.
+      </div>
+      <div style="font-size:14px; line-height:1.65; color:var(--text-secondary); margin-bottom:16px;">
+        NearuVibe™ continuously reads micro-expressions, voice tone, and physiological signals to model emotional state with unprecedented accuracy — enabling machines to respond with genuine empathy.
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); line-height:1.55; margin-bottom:16px;">
+        Soul Engine™ · NearuVibe™ · SDK v2.1 · API licensing
+      </div>
+      <div class="type-divider"></div>
+      <div class="type-meta-row">
+        <div class="type-meta"><div class="type-meta-key">Family</div><div class="type-meta-val">DM Sans</div></div>
+        <div class="type-meta"><div class="type-meta-key">Weights</div><div class="type-meta-val">300 · 400 · 500 · 600 · 700</div></div>
+        <div class="type-meta"><div class="type-meta-key">Tracking</div><div class="type-meta-val">-0.01em to 0em</div></div>
+        <div class="type-meta"><div class="type-meta-key">Style</div><div class="type-meta-val">Humanist Sans-Serif</div></div>
+        <div class="type-meta"><div class="type-meta-key">Use</div><div class="type-meta-val">Body, UI, descriptions</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Type scale -->
+  <div class="card mb-24">
+    <div class="card-label">Type Scale</div>
+    <div style="display:flex; flex-direction:column; gap:0;">
+      <div style="display:flex; align-items:baseline; gap:20px; padding:16px 0; border-bottom:1px solid var(--border);">
+        <span style="font-size:11px; color:var(--text-dim); width:120px; flex-shrink:0; font-family:var(--font-display); letter-spacing:0.1em;">Display XL</span>
+        <span style="font-family:var(--font-display); font-size:72px; font-weight:700; letter-spacing:0.06em; color:var(--text); line-height:1; flex:1;">NEARU</span>
+        <span class="mono" style="font-size:11px; color:var(--text-dim);">72px · 700 · 0.06em</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; padding:12px 0; border-bottom:1px solid var(--border);">
+        <span style="font-size:11px; color:var(--text-dim); width:120px; flex-shrink:0; font-family:var(--font-display); letter-spacing:0.1em;">Display LG</span>
+        <span style="font-family:var(--font-display); font-size:48px; font-weight:700; letter-spacing:0.04em; color:var(--text); flex:1;">Soul Engine™</span>
+        <span class="mono" style="font-size:11px; color:var(--text-dim);">48px · 700 · 0.04em</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; padding:12px 0; border-bottom:1px solid var(--border);">
+        <span style="font-size:11px; color:var(--text-dim); width:120px; flex-shrink:0; font-family:var(--font-display); letter-spacing:0.1em;">Display MD</span>
+        <span style="font-family:var(--font-display); font-size:32px; font-weight:600; letter-spacing:0.03em; color:var(--text); flex:1;">NearuVibe™ Emotion Model</span>
+        <span class="mono" style="font-size:11px; color:var(--text-dim);">32px · 600 · 0.03em</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; padding:12px 0; border-bottom:1px solid var(--border);">
+        <span style="font-size:11px; color:var(--text-dim); width:120px; flex-shrink:0; font-family:var(--font-display); letter-spacing:0.1em;">Heading LG</span>
+        <span style="font-size:24px; font-weight:600; color:var(--text); flex:1;">Emotional intelligence infrastructure</span>
+        <span class="mono" style="font-size:11px; color:var(--text-dim);">24px · 600 · 0em</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; padding:12px 0; border-bottom:1px solid var(--border);">
+        <span style="font-size:11px; color:var(--text-dim); width:120px; flex-shrink:0; font-family:var(--font-display); letter-spacing:0.1em;">Body LG</span>
+        <span style="font-size:16px; color:var(--text-secondary); flex:1;">NearuVibe™ continuously reads micro-expressions and voice tone.</span>
+        <span class="mono" style="font-size:11px; color:var(--text-dim);">16px · 400 · 0em</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; padding:12px 0; border-bottom:1px solid var(--border);">
+        <span style="font-size:11px; color:var(--text-dim); width:120px; flex-shrink:0; font-family:var(--font-display); letter-spacing:0.1em;">Body</span>
+        <span style="font-size:14px; color:var(--text-secondary); flex:1;">SDK · API licensing · B2B robotics integration platform</span>
+        <span class="mono" style="font-size:11px; color:var(--text-dim);">14px · 400 · 0em</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; padding:12px 0; border-bottom:1px solid var(--border);">
+        <span style="font-size:11px; color:var(--text-dim); width:120px; flex-shrink:0; font-family:var(--font-display); letter-spacing:0.1em;">Body SM</span>
+        <span style="font-size:12px; color:var(--text-muted); flex:1;">3 clips · 1h ago · Processing emotion state</span>
+        <span class="mono" style="font-size:11px; color:var(--text-dim);">12px · 400 · 0em</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:20px; padding:12px 0;">
+        <span style="font-size:11px; color:var(--text-dim); width:120px; flex-shrink:0; font-family:var(--font-display); letter-spacing:0.1em;">Label / Cap</span>
+        <span style="font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); flex:1;">EMOTION SNAPSHOT · STATUS ACTIVE · SDK V2</span>
+        <span class="mono" style="font-size:11px; color:var(--text-dim);">11px · 700 · 0.14em · CAPS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       GRADIENTS & EFFECTS
+       ======================================================== -->
+  <div class="section-header">
+    <span class="section-label">Gradients & Effects</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="grid-2 mb-24">
+    <div class="card">
+      <div class="card-label">Gradients</div>
+      <div class="grad-card grad-blue mb-8">Blue Horizontal — CTAs, hero elements</div>
+      <div class="grad-card grad-blue-v mb-8" style="background:var(--grad-blue-v);">Blue Vertical — Cards, depth layers</div>
+      <div class="grad-card grad-violet mb-8">Violet → Blue — AI processing, premium</div>
+      <div class="grad-card grad-dark" style="background:linear-gradient(135deg,#0D1420,#111827); border:1px solid var(--border-md); color:var(--text-secondary);">Dark Gradient — Panel backgrounds</div>
+    </div>
+    <div>
+      <div class="card mb-12">
+        <div class="card-label">Glassmorphism</div>
+        <div class="glass-card">
+          <div class="glass-card-inner">
+            <div style="font-family:var(--font-display); font-size:18px; font-weight:600; letter-spacing:0.04em; margin-bottom:6px;">NearuVibe™</div>
+            <div style="font-size:13px; color:var(--text-secondary);">Frosted glass card — backdrop-filter: blur(20px) · Used for overlays, modals, floating panels</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Glow Effects</div>
+        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--blue);box-shadow:0 0 24px rgba(59,158,255,0.6),0 0 48px rgba(59,158,255,0.3);"></div>
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--cyan);box-shadow:0 0 24px rgba(0,212,255,0.6),0 0 48px rgba(0,212,255,0.3);"></div>
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--violet);box-shadow:0 0 24px rgba(123,91,255,0.6),0 0 48px rgba(123,91,255,0.3);"></div>
+          <div style="font-size:12px; color:var(--text-muted); flex:1;">Glow: spread 24px at 60% opacity.<br>Used on orbs, active states, CTA buttons.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       UI COMPONENTS
+       ======================================================== -->
+  <div class="section-header" id="components">
+    <span class="section-label">UI Components</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="grid-2 mb-16">
+    <div class="card">
+      <div class="card-label">Buttons</div>
+
+      <div style="margin-bottom:8px; font-size:11px; color:var(--text-dim); letter-spacing:0.08em; text-transform:uppercase; font-family:var(--font-display);">Variants</div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+        <button class="btn btn-primary">Primary</button>
+        <button class="btn btn-secondary">Secondary</button>
+        <button class="btn btn-ghost">Ghost</button>
+        <button class="btn btn-danger">Danger</button>
+        <button class="btn btn-success">Success</button>
+        <button class="btn btn-cyan">NearuVibe™</button>
+        <button class="btn btn-violet">Processing</button>
+      </div>
+
+      <div style="margin-bottom:8px; font-size:11px; color:var(--text-dim); letter-spacing:0.08em; text-transform:uppercase; font-family:var(--font-display);">Sizes</div>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:20px;">
+        <button class="btn btn-primary btn-lg">Large</button>
+        <button class="btn btn-primary">Default</button>
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary btn-xs">XS</button>
+      </div>
+
+      <div style="margin-bottom:8px; font-size:11px; color:var(--text-dim); letter-spacing:0.08em; text-transform:uppercase; font-family:var(--font-display);">Shapes</div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px;">
+        <button class="btn btn-primary btn-pill">Pill Shape</button>
+        <button class="btn btn-ghost btn-pill">Ghost Pill</button>
+        <button class="btn btn-secondary btn-icon">◀</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Status Badges</div>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
+        <div><span class="badge badge-active"><span class="badge-dot"></span>Active · Online</span></div>
+        <div><span class="badge badge-processing"><span class="badge-dot"></span>Processing · AI Matching</span></div>
+        <div><span class="badge badge-draft"><span class="badge-dot"></span>Draft · In Progress</span></div>
+        <div><span class="badge badge-error"><span class="badge-dot"></span>Error · Offline</span></div>
+        <div><span class="badge badge-neutral"><span class="badge-dot"></span>Neutral · Archived</span></div>
+        <div><span class="badge badge-cyan"><span class="badge-dot"></span>NearuVibe™ Active</span></div>
+        <div><span class="badge badge-violet"><span class="badge-dot"></span>Inference Running</span></div>
+      </div>
+      <div class="card-label" style="margin-top:8px;">Tags</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <span class="tag tag-blue">SDK</span>
+        <span class="tag tag-blue">B2B</span>
+        <span class="tag tag-green">Exported</span>
+        <span class="tag tag-amber">Beta</span>
+        <span class="tag tag-red">Deprecated</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-16">
+    <div class="card">
+      <div class="card-label">Form Inputs</div>
+      <div class="input-group">
+        <label class="input-label">Partner name</label>
+        <input class="input" type="text" placeholder="e.g. Boston Dynamics">
+        <span class="input-hint">Enter your organization's display name</span>
+      </div>
+      <div class="input-group">
+        <label class="input-label">API Key</label>
+        <input class="input" type="text" placeholder="sk-nearu-···" style="font-family:'Courier New',monospace;">
+      </div>
+      <div class="input-group">
+        <label class="input-label" style="color:var(--red);">SDK Version (error state)</label>
+        <input class="input input-error" type="text" value="v0.9-invalid">
+        <span class="input-error-msg">⚠ Invalid version format. Use semver: 1.0.0</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Border Radius Scale</div>
+      <div class="radius-grid">
+        <div class="radius-item" style="border-radius:var(--r-xs);"><div class="radius-name">XS</div><div class="radius-val">4px</div></div>
+        <div class="radius-item" style="border-radius:var(--r-sm);"><div class="radius-name">SM</div><div class="radius-val">6px</div></div>
+        <div class="radius-item" style="border-radius:var(--r);"><div class="radius-name">MD</div><div class="radius-val">10px</div></div>
+        <div class="radius-item" style="border-radius:var(--r-lg);"><div class="radius-name">LG</div><div class="radius-val">16px</div></div>
+        <div class="radius-item" style="border-radius:var(--r-xl);"><div class="radius-name">XL</div><div class="radius-val">20px</div></div>
+        <div class="radius-item" style="border-radius:var(--r-full);"><div class="radius-name">Full</div><div class="radius-val">9999</div></div>
+      </div>
+      <div style="margin-top:16px; font-size:12px; color:var(--text-muted);">Consistent radii create a soft, approachable feel while maintaining the futuristic aesthetic.</div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-16">
+    <div class="card">
+      <div class="card-label">Elevation & Shadows</div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="elevation-card elev-soft">Soft — Cards, minimal depth</div>
+        <div class="elevation-card elev-med">Medium — Dropdowns, popovers</div>
+        <div class="elevation-card elev-blue">Blue Glow — Active, CTA, focus</div>
+        <div class="elevation-card elev-card">Card — Standard UI card</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Avatar / User Presence</div>
+      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px;">
+        <div class="avatar avatar-lg avatar-online">N</div>
+        <div class="avatar avatar-online">JD</div>
+        <div class="avatar avatar-sm">A</div>
+        <div class="avatar" style="background:var(--violet-dim);border-color:var(--violet-border);color:var(--violet);">AI</div>
+        <div class="avatar" style="background:var(--cyan-dim);border-color:var(--cyan-border);color:var(--cyan);">⚡</div>
+      </div>
+
+      <div class="card-label">Soul Orb — NearuVibe™</div>
+      <div style="display:flex; align-items:center; gap:24px;">
+        <div class="soul-orb"></div>
+        <div>
+          <div style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px;">Holographic Companion</div>
+          <div style="font-size:12px; color:var(--text-muted);">Breathes at 3s cycle. Used in device rendering, loading states, and brand moments.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       UI PATTERNS
+       ======================================================== -->
+  <div class="section-header" id="patterns">
+    <span class="section-label">UI Patterns</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="grid-2 mb-16">
+    <!-- Record button -->
+    <div class="card">
+      <div class="card-label">Record Button</div>
+      <div style="text-align:center; padding:24px 0;">
+        <div style="font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:500; color:var(--text-muted); letter-spacing:0.04em; margin-bottom:24px; font-style:italic;">What's on your mind?</div>
+        <div class="record-btn-wrap">
+          <button class="record-btn">
+            <div class="record-icon"></div>
+          </button>
+          <span style="font-size:12px; color:var(--text-muted);">Tap to record</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Waveform -->
+    <div class="card">
+      <div class="card-label">Pill CTA & Waveform Visualization</div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:24px; padding:16px 0;">
+        <button class="btn btn-primary btn-pill btn-lg" style="gap:10px;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 3l10 5-10 5V3z"/></svg>
+          Preview & Export
+        </button>
+        <div class="waveform">
+          <div class="wave-bar wb1 active"></div>
+          <div class="wave-bar wb2 active"></div>
+          <div class="wave-bar wb3 active"></div>
+          <div class="wave-bar wb4 active"></div>
+          <div class="wave-bar wb5 active"></div>
+          <div class="wave-bar wb6 active"></div>
+          <div class="wave-bar wb7 active"></div>
+          <div class="wave-bar wb8 active"></div>
+          <div class="wave-bar wb9 active"></div>
+          <div class="wave-bar wb10 active"></div>
+          <div class="wave-bar wb11 active"></div>
+          <div class="wave-bar wb12 active"></div>
+          <div class="wave-bar wb13"></div>
+          <div class="wave-bar wb14"></div>
+          <div class="wave-bar wb15"></div>
+          <div class="wave-bar wb16"></div>
+          <div class="wave-bar wb17"></div>
+        </div>
+        <span style="font-size:11px; color:var(--text-dim);">Audio waveform — active bars animate, inactive at 20% opacity</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-16">
+    <!-- Project cards -->
+    <div class="card">
+      <div class="card-label">Project Cards</div>
+      <div class="project-card">
+        <div class="project-thumb">🤖</div>
+        <div class="project-info">
+          <div class="project-name">Boston Dynamics SDK</div>
+          <div class="project-meta">31 sessions · 1h ago</div>
+          <div style="margin-top:4px;"><span class="badge badge-active" style="padding:2px 10px;font-size:11px;"><span class="badge-dot"></span>Active</span></div>
+        </div>
+        <div class="project-time">2:14</div>
+      </div>
+      <div class="project-card">
+        <div class="project-thumb" style="background:var(--amber-dim);border-color:rgba(210,153,34,0.25);">🎙</div>
+        <div class="project-info">
+          <div class="project-name">Voice Recording — Demo</div>
+          <div class="project-meta">3 clips · 3d ago</div>
+          <div style="margin-top:4px;"><span class="badge badge-draft" style="padding:2px 10px;font-size:11px;"><span class="badge-dot"></span>Draft</span></div>
+        </div>
+        <div class="project-time">0:10</div>
+      </div>
+    </div>
+
+    <!-- Timeline clips -->
+    <div class="card">
+      <div class="card-label">Timeline Clips</div>
+      <div class="timeline-item completed">
+        <div class="timeline-check ex">✕</div>
+        <div class="timeline-text">day six of building the soul engine prototype</div>
+      </div>
+      <div class="timeline-item selected">
+        <div class="timeline-check done">✓</div>
+        <div class="timeline-text">we spent the whole day on one massive feature</div>
+        <div class="timeline-play">▶</div>
+      </div>
+      <div class="timeline-item default">
+        <div class="timeline-check add">+</div>
+        <div class="timeline-text">NearuVibe™ emotion inference pipeline</div>
+        <div class="timeline-play">▶</div>
+      </div>
+      <div class="timeline-item completed">
+        <div class="timeline-check ex">✕</div>
+        <div class="timeline-text">starting a project from holographic demo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab bar + Emotion pill -->
+  <div class="grid-2 mb-16">
+    <div class="card">
+      <div class="card-label">Tab Bar Navigation</div>
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <div class="tab-icon">⊞</div>
+          <div class="tab-label">Projects</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">💬</div>
+          <div class="tab-label">Coach</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon" style="font-size:20px; font-weight:300;">+</div>
+          <div class="tab-label">New</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">⬡</div>
+          <div class="tab-label">Vault</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">◯</div>
+          <div class="tab-label">Profile</div>
+        </div>
+      </div>
+      <div style="margin-top:12px; font-size:11px; color:var(--text-dim); text-align:center;">5-tab layout · Blue active state · Rounded pill container</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Emotion Snapshot — NearuVibe™</div>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+        <div class="emotion-pill"><span class="emotion-icon">😊</span><span class="emotion-label">Happy</span><span class="emotion-score">· 87%</span></div>
+        <div class="emotion-pill" style="background:var(--cyan-dim);border-color:var(--cyan-border);"><span class="emotion-icon">🎯</span><span class="emotion-label" style="color:var(--cyan);">Focused</span><span class="emotion-score">· 92%</span></div>
+        <div class="emotion-pill" style="background:var(--violet-dim);border-color:var(--violet-border);"><span class="emotion-icon">🤔</span><span class="emotion-label" style="color:var(--violet);">Curious</span><span class="emotion-score">· 74%</span></div>
+        <div class="emotion-pill" style="background:var(--amber-dim);border-color:rgba(210,153,34,0.25);"><span class="emotion-icon">😤</span><span class="emotion-label" style="color:var(--amber);">Stressed</span><span class="emotion-score">· 41%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SPACING SCALE
+       ======================================================== -->
+  <div class="section-header">
+    <span class="section-label">Spacing Scale</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="card mb-24">
+    <div class="card-label">8pt Base Grid</div>
+    <div class="spacing-row">
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:4px;"></div>
+        <div class="spacing-label">s-1</div>
+        <div class="spacing-value">4px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:8px;"></div>
+        <div class="spacing-label">s-2</div>
+        <div class="spacing-value">8px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:12px;"></div>
+        <div class="spacing-label">s-3</div>
+        <div class="spacing-value">12px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:16px;"></div>
+        <div class="spacing-label">s-4</div>
+        <div class="spacing-value">16px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:20px;"></div>
+        <div class="spacing-label">s-5</div>
+        <div class="spacing-value">20px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:24px;"></div>
+        <div class="spacing-label">s-6</div>
+        <div class="spacing-value">24px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:32px;"></div>
+        <div class="spacing-label">s-8</div>
+        <div class="spacing-value">32px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:40px;"></div>
+        <div class="spacing-label">s-10</div>
+        <div class="spacing-value">40px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:48px;"></div>
+        <div class="spacing-label">s-12</div>
+        <div class="spacing-value">48px</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-block" style="height:64px;"></div>
+        <div class="spacing-label">s-16</div>
+        <div class="spacing-value">64px</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MOTION
+       ======================================================== -->
+  <div class="section-header" id="motion">
+    <span class="section-label">Motion & Animation</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="card mb-24">
+    <div class="card-label">Timing Tokens</div>
+    <div class="motion-item motion-easeOut">
+      <div class="motion-name">Instant</div>
+      <div class="motion-timing">duration: 80ms · ease-out</div>
+      <div class="motion-bar"><div class="motion-fill"></div></div>
+      <div style="font-size:11px; color:var(--text-dim); width:140px; text-align:right;">Hover, focus, toggle</div>
+    </div>
+    <div class="motion-item motion-easeOut">
+      <div class="motion-name">Fast</div>
+      <div class="motion-timing">duration: 150ms · ease-out</div>
+      <div class="motion-bar"><div class="motion-fill"></div></div>
+      <div style="font-size:11px; color:var(--text-dim); width:140px; text-align:right;">Button press, badge</div>
+    </div>
+    <div class="motion-item motion-spring">
+      <div class="motion-name">Normal</div>
+      <div class="motion-timing">duration: 250ms · cubic-bezier(0.4,0,0.2,1)</div>
+      <div class="motion-bar"><div class="motion-fill"></div></div>
+      <div style="font-size:11px; color:var(--text-dim); width:140px; text-align:right;">Card reveal, dropdown</div>
+    </div>
+    <div class="motion-item motion-spring">
+      <div class="motion-name">Smooth</div>
+      <div class="motion-timing">duration: 400ms · cubic-bezier(0.4,0,0.2,1)</div>
+      <div class="motion-bar"><div class="motion-fill"></div></div>
+      <div style="font-size:11px; color:var(--text-dim); width:140px; text-align:right;">Page transition, modal</div>
+    </div>
+    <div class="motion-item" style="animation-timing-function:ease-in-out;">
+      <div class="motion-name">Breathe</div>
+      <div class="motion-timing">duration: 3s · ease-in-out · infinite</div>
+      <div class="motion-bar"><div class="motion-fill" style="animation-duration:3s;animation-timing-function:ease-in-out;"></div></div>
+      <div style="font-size:11px; color:var(--text-dim); width:140px; text-align:right;">Soul orb, record ring</div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       ICON LIBRARY
+       ======================================================== -->
+  <div class="section-header">
+    <span class="section-label">Icon Library</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="card mb-24">
+    <div class="card-label">Core Icons — Line style · 20×20px · 1.5px stroke</div>
+    <div class="icon-grid">
+      <div class="icon-item"><div class="icon-glyph">◉</div><div class="icon-name">Record</div></div>
+      <div class="icon-item"><div class="icon-glyph">▶</div><div class="icon-name">Play</div></div>
+      <div class="icon-item"><div class="icon-glyph">⏸</div><div class="icon-name">Pause</div></div>
+      <div class="icon-item"><div class="icon-glyph">⏹</div><div class="icon-name">Stop</div></div>
+      <div class="icon-item"><div class="icon-glyph">⊞</div><div class="icon-name">Grid</div></div>
+      <div class="icon-item"><div class="icon-glyph">💬</div><div class="icon-name">Coach</div></div>
+      <div class="icon-item"><div class="icon-glyph">⬡</div><div class="icon-name">Vault</div></div>
+      <div class="icon-item"><div class="icon-glyph">◯</div><div class="icon-name">Profile</div></div>
+      <div class="icon-item"><div class="icon-glyph">⚙</div><div class="icon-name">Settings</div></div>
+      <div class="icon-item"><div class="icon-glyph">🔔</div><div class="icon-name">Alert</div></div>
+      <div class="icon-item"><div class="icon-glyph">⚡</div><div class="icon-name">Emotion</div></div>
+      <div class="icon-item"><div class="icon-glyph">🔗</div><div class="icon-name">API</div></div>
+      <div class="icon-item"><div class="icon-glyph">📊</div><div class="icon-name">Analytics</div></div>
+      <div class="icon-item"><div class="icon-glyph">🤖</div><div class="icon-name">Robot</div></div>
+      <div class="icon-item"><div class="icon-glyph">✕</div><div class="icon-name">Close</div></div>
+      <div class="icon-item"><div class="icon-glyph">+</div><div class="icon-name">Add</div></div>
+      <div class="icon-item"><div class="icon-glyph">✓</div><div class="icon-name">Check</div></div>
+      <div class="icon-item"><div class="icon-glyph">↑</div><div class="icon-name">Export</div></div>
+      <div class="icon-item"><div class="icon-glyph">🔍</div><div class="icon-name">Search</div></div>
+      <div class="icon-item"><div class="icon-glyph">◈</div><div class="icon-name">Soul</div></div>
+    </div>
+    <div style="margin-top:16px; font-size:12px; color:var(--text-muted);">Recommended: Lucide Icons or Phosphor Icons — consistent 1.5px stroke weight, line style. Active state: fill with <span style="color:var(--blue);">--blue</span>.</div>
+  </div>
+
+  <!-- Footer -->
+  <div style="border-top:1px solid var(--border); padding-top:32px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="font-family:var(--font-display); font-size:20px; font-weight:700; letter-spacing:0.1em; background:var(--grad-blue); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">NEARU</div>
+      <span style="font-size:12px; color:var(--text-dim);">Design System v1.0</span>
+    </div>
+    <div style="font-size:11px; color:var(--text-dim);">nnearu.com · We Build Souls for Machines · © 2026 Nearu Inc.</div>
+  </div>
+
+</div>
+</body>
+</html>
